@@ -47,8 +47,17 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Hit.cs" />
+    <Compile Include="MathEx.cs" />
+    <Compile Include="Transformables\Camera.cs" />
     <Compile Include="Component.cs" />
     <Compile Include="Components\RigidBody2D.cs" />
+    <Compile Include="Ray.cs" />
+    <Compile Include="Transformables\Lights\Light.cs" />
+    <Compile Include="Transformables\Shapes\Shape.cs" />
+    <Compile Include="Transformables\Shapes\Sphere.cs" />
+    <Compile Include="Transformables\Transformable.cs" />
+    <Compile Include="Material.cs" />
     <Compile Include="Time.cs" />
     <Compile Include="DirectBitmap.cs" />
     <Compile Include="MainWindow.cs">
@@ -116,5 +125,6 @@
   <ItemGroup>
     <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

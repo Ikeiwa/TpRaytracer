@@ -100,6 +100,29 @@ namespace Vim.Math3d
             return new Quaternion((float)qx, (float)qy, (float)qz, (float)qw);
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static Quaternion CreateFromEulerAnglesDeg(float X,float Y,float Z)
+        {
+            var DegToRad = Math.PI / 180.0;
+            var Xr = X * DegToRad;
+            var Yr = Y * DegToRad;
+            var Zr = Z * DegToRad;
+
+
+            var c1 = Math.Cos(Xr / 2);
+            var s1 = Math.Sin(Xr / 2);
+            var c2 = Math.Cos(Yr / 2);
+            var s2 = Math.Sin(Yr / 2);
+            var c3 = Math.Cos(Zr / 2);
+            var s3 = Math.Sin(Zr / 2);
+
+            var qw = c1 * c2 * c3 - s1 * s2 * s3;
+            var qx = s1 * c2 * c3 + c1 * s2 * s3;
+            var qy = c1 * s2 * c3 - s1 * c2 * s3;
+            var qz = c1 * c2 * s3 + s1 * s2 * c3;
+            return new Quaternion((float)qx, (float)qy, (float)qz, (float)qw);
+        }
+
         /// <summary>
         /// Creates a new Quaternion from the given rotation around the X axis
         /// </summary>

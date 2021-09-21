@@ -12,6 +12,9 @@ using System.Windows.Forms;
 using SyntheseTP1.Renderables;
 using SyntheseTP1.Components;
 using Vim.Math3d;
+using SyntheseTP1.Shapes;
+using Sphere = SyntheseTP1.Shapes.Sphere;
+using SyntheseTP1.Transformables.Lights;
 
 namespace SyntheseTP1
 {
@@ -32,6 +35,8 @@ namespace SyntheseTP1
 
 		private List<GameObject> gameObjects;
 
+		
+
 		public MainWindow()
 		{
 			InitializeComponent();
@@ -42,8 +47,14 @@ namespace SyntheseTP1
 
 			SetStyle(ControlStyles.AllPaintingInWmPaint | ControlStyles.UserPaint | ControlStyles.OptimizedDoubleBuffer, true);
 
-			img = new DirectBitmap(Size.Width, Size.Height);
-			res = new Vector2(Size.Width, Size.Height);
+			img = new DirectBitmap(ClientSize.Width, ClientSize.Height);
+			res = new Vector2(ClientSize.Width, ClientSize.Height);
+		}
+
+		private void MainWindow_Resize(object sender, EventArgs e)
+		{
+			img = new DirectBitmap(ClientSize.Width, ClientSize.Height);
+			res = new Vector2(ClientSize.Width, ClientSize.Height);
 		}
 
 		public async void MainLoop()
@@ -195,6 +206,99 @@ namespace SyntheseTP1
 			Invalidate();
 		}
 
+
+		private bool GetClosestShape(Ray ray,List<Shape> shapes, out Hit hit)
+        {
+			float? minDist = float.MaxValue;
+			Hit minHit = null;
+
+			foreach (Shape shape in shapes)
+			{
+				Hit tmpHit = shape.Trace(ray);
+				if (tmpHit != null && tmpHit.distance < minDist.Value)
+				{
+					minDist = tmpHit.distance;
+					minHit = tmpHit;
+				}
+			}
+
+			hit = minHit;
+
+			return hit != null;
+		}
+
+		private bool IsPointVisible(Ray ray,List<Shape> shapes)
+        {
+			foreach (Shape shape in shapes)
+			{
+				float? shapeDist = shape.Intersect(ray);
+                if (shapeDist.HasValue && shapeDist.Value < ray.length)
+						return false;
+			}
+			return true;
+		}
+
+		private void DrawRayTrace()
+        {
+			Camera cam = new Camera();
+
+			List<Shape> shapes = new List<Shape>();
+
+			Material red = new Material { color = new HDRColor(1, 0, 0) };
+			Material green = new Material { color = new HDRColor(0, 1, 0) };
+
+			shapes.Add(new Sphere 
+			{ 
+				position = new Vector3(0, 0, 4), 
+				material = red
+			});
+
+			shapes.Add(new Sphere
+			{
+				radius = 0.5f,
+				position = new Vector3(0.75f, 0, 3.5f),
+				material = green
+			});
+
+
+			Light light = new Light { position = new Vector3(2, 0, 3) };
+
+			for (int x = 0; x < img.Width; x++)
+			{
+				for (int y = 0; y < img.Height; y++)
+				{
+					Ray camRay = cam.PixelToRay(new Vector2(x, y), res);
+
+					bool hasHit = GetClosestShape(camRay, shapes, out Hit hit);
+
+					if(hasHit)
+                    {
+						if(IsPointVisible(new Ray(hit.position, light.position- hit.position), shapes))
+                        {
+							HDRColor finalColor = hit.shape.material.color;
+							finalColor *= Vector3.Dot(hit.normal, (light.position - hit.position).Normalize());
+
+							img.SetPixel(x, y, finalColor.ToColor());
+                        }
+                        else
+                        {
+							img.SetPixel(x, y, Color.Black);
+						}
+
+
+					}
+					else
+					{
+						img.SetPixel(x, y, Color.Magenta);
+					}
+                    
+				}
+			}
+
+
+			Invalidate();
+		}
+
 		public bool PreFilterMessage(ref Message m)
 		{
 			
@@ -235,16 +339,17 @@ namespace SyntheseTP1
 						if (loopTask == null)
 							loopTask = Task.Run(MainLoop);
 						break;
+					case (int)Keys.NumPad5:
+						mode = 0;
+						DrawRayTrace();
+						img.Bitmap.Save("img.png", ImageFormat.Png);
+						break;
 				}
 			}
 
 			return false;
 		}
 
-		private void MainWindow_Resize(object sender, EventArgs e)
-		{
-			img = new DirectBitmap(Size.Width, Size.Height);
-			res = new Vector2(Size.Width, Size.Height);
-		}
+		
 	}
 }
