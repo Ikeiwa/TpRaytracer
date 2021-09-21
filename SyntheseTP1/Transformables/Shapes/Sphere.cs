@@ -48,7 +48,7 @@ namespace SyntheseTP1.Shapes
             if (dist.HasValue)
             {
                 Hit hit = new Hit();
-                hit.shape = this;
+                hit.material = material;
                 hit.distance = dist.Value;
                 hit.position = ray.GetEnd(dist.Value - MathEx.RayOffset);
                 hit.normal = (hit.position - position).Normalize();

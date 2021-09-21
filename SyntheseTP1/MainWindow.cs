@@ -275,7 +275,7 @@ namespace SyntheseTP1
                     {
 						if(IsPointVisible(new Ray(hit.position, light.position- hit.position), shapes))
                         {
-							HDRColor finalColor = hit.shape.material.color;
+							HDRColor finalColor = hit.material.color;
 							finalColor *= Vector3.Dot(hit.normal, (light.position - hit.position).Normalize());
 
 							img.SetPixel(x, y, finalColor.ToColor());

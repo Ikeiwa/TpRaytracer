@@ -13,6 +13,6 @@ namespace SyntheseTP1
         public Vector3 position;
         public Vector3 normal;
         public float distance;
-        public Shape shape;
+        public Material material;
     }
 }
