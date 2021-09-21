@@ -22,8 +22,6 @@ namespace SyntheseTP1
 
             Vector3 dir = new Vector3(pos.X, pos.Y, 1);
 
-            Matrix4x4 transformMat = GetTransformMatrix();
-
             Vector3 start = Vector3.Zero.Transform(rotation);
             dir = dir.Transform(rotation);
             dir = dir - start;

@@ -260,6 +260,8 @@ namespace SyntheseTP1
 				material = green
 			});
 
+			HDRColor[,] buffer = new HDRColor[(int)res.X, (int)res.Y];
+
 
 			Light light = new Light { position = new Vector3(2, 0, 3) };
 
@@ -278,23 +280,31 @@ namespace SyntheseTP1
 							HDRColor finalColor = hit.material.color;
 							finalColor *= Vector3.Dot(hit.normal, (light.position - hit.position).Normalize());
 
-							img.SetPixel(x, y, finalColor.ToColor());
-                        }
+							buffer[x, y] = finalColor;
+
+						}
                         else
                         {
-							img.SetPixel(x, y, Color.Black);
+							buffer[x, y] = new HDRColor(0,0,0);
 						}
 
 
 					}
 					else
 					{
-						img.SetPixel(x, y, Color.Magenta);
+						buffer[x, y] = new HDRColor(1, 0, 1);
 					}
-                    
 				}
 			}
 
+			//Render buffer to screen
+			for (int x = 0; x < img.Width; x++)
+			{
+				for (int y = 0; y < img.Height; y++)
+				{
+					img.SetPixel(x, y, buffer[x, y].ToColor());
+				}
+			}
 
 			Invalidate();
 		}
