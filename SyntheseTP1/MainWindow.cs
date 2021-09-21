@@ -263,7 +263,10 @@ namespace SyntheseTP1
 			HDRColor[,] buffer = new HDRColor[(int)res.X, (int)res.Y];
 
 
-			Light light = new Light { position = new Vector3(2, 0, 3) };
+			Light light = new Light {
+				position = new Vector3(2, 0, 3),
+				Intensity = 3
+			};
 
 			for (int x = 0; x < img.Width; x++)
 			{
@@ -278,7 +281,7 @@ namespace SyntheseTP1
 						if(IsPointVisible(new Ray(hit.position, light.position- hit.position), shapes))
                         {
 							HDRColor finalColor = hit.material.color;
-							finalColor *= Vector3.Dot(hit.normal, (light.position - hit.position).Normalize());
+							finalColor *= light.color*Vector3.Dot(hit.normal, (light.position - hit.position).Normalize())*light.Intensity;
 
 							buffer[x, y] = finalColor;
 

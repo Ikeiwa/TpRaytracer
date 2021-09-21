@@ -36,6 +36,11 @@ namespace SyntheseTP1
             return new HDRColor(color.R * factor, color.G * factor, color.B * factor, color.A);
         }
 
+        public static HDRColor operator *(HDRColor colorA, HDRColor colorB)
+        {
+            return new HDRColor(colorA.R * colorB.R, colorA.G * colorB.G, colorA.B * colorB.B, colorA.A * colorB.A);
+        }
+
         public static HDRColor Lerp(HDRColor A,HDRColor B, float t)
         {
             return new HDRColor(

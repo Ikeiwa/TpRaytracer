@@ -9,7 +9,7 @@ namespace SyntheseTP1.Transformables.Lights
 {
      class Light : Transformable
     {
-        public double Intensity = 1;
+        public float Intensity = 1;
         public HDRColor color = new HDRColor(1,1,1);
     }
 }
