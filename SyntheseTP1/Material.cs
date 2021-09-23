@@ -13,32 +13,62 @@ namespace SyntheseTP1
         public double R = 0;
         public double G = 0;
         public double B = 0;
-        public double A = 1;
 
         public HDRColor(double R,double G,double B,double A=1)
         {
             this.R = R;
             this.G = G;
             this.B = B;
-            this.A = A;
         }
 
         public Color ToColor()
         {
-            return Color.FromArgb((int)MathOps.Clamp(A * 255, 0, 255),
+            return Color.FromArgb(255,
                                   (int)MathOps.Clamp(R * 255, 0, 255),
                                   (int)MathOps.Clamp(G * 255, 0, 255),
                                   (int)MathOps.Clamp(B * 255, 0, 255));
         }
 
+        public static HDRColor GetAverage(List<HDRColor> colors)
+        {
+            HDRColor result = new HDRColor(0,0,0);
+            foreach(HDRColor color in colors)
+            {
+                result += color;
+            }
+            return result / colors.Count;
+        }
+
+        public override bool Equals(object obj) => Equals(obj as HDRColor);
+
+        public bool Equal(HDRColor other)
+        {
+            return R == other.R && G == other.G && B == other.B;
+        }
+
         public static HDRColor operator *(HDRColor color, float factor)
         {
-            return new HDRColor(color.R * factor, color.G * factor, color.B * factor, color.A);
+            return new HDRColor(color.R * factor, color.G * factor, color.B * factor);
         }
 
         public static HDRColor operator *(HDRColor colorA, HDRColor colorB)
         {
-            return new HDRColor(colorA.R * colorB.R, colorA.G * colorB.G, colorA.B * colorB.B, colorA.A * colorB.A);
+            return new HDRColor(colorA.R * colorB.R, colorA.G * colorB.G, colorA.B * colorB.B);
+        }
+
+        public static HDRColor operator +(HDRColor colorA, float val)
+        {
+            return new HDRColor(colorA.R + val, colorA.G + val, colorA.B + val);
+        }
+
+        public static HDRColor operator +(HDRColor colorA, HDRColor colorB)
+        {
+            return new HDRColor(colorA.R + colorB.R, colorA.G + colorB.G, colorA.B + colorB.B);
+        }
+
+        public static HDRColor operator /(HDRColor color, float factor)
+        {
+            return new HDRColor(color.R / factor, color.G / factor, color.B / factor);
         }
 
         public static HDRColor Lerp(HDRColor A,HDRColor B, float t)

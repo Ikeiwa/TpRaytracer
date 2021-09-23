@@ -49,6 +49,9 @@ namespace SyntheseTP1
 
 			img = new DirectBitmap(ClientSize.Width, ClientSize.Height);
 			res = new Vector2(ClientSize.Width, ClientSize.Height);
+
+			DrawRayTrace();
+			img.Bitmap.Save("img.png", ImageFormat.Png);
 		}
 
 		private void MainWindow_Resize(object sender, EventArgs e)
@@ -207,96 +210,44 @@ namespace SyntheseTP1
 		}
 
 
-		private bool GetClosestShape(Ray ray,List<Shape> shapes, out Hit hit)
-        {
-			float? minDist = float.MaxValue;
-			Hit minHit = null;
-
-			foreach (Shape shape in shapes)
-			{
-				Hit tmpHit = shape.Trace(ray);
-				if (tmpHit != null && tmpHit.distance < minDist.Value)
-				{
-					minDist = tmpHit.distance;
-					minHit = tmpHit;
-				}
-			}
-
-			hit = minHit;
-
-			return hit != null;
-		}
-
-		private bool IsPointVisible(Ray ray,List<Shape> shapes)
-        {
-			foreach (Shape shape in shapes)
-			{
-				float? shapeDist = shape.Intersect(ray);
-                if (shapeDist.HasValue && shapeDist.Value < ray.length)
-						return false;
-			}
-			return true;
-		}
+		
 
 		private void DrawRayTrace()
         {
-			Camera cam = new Camera();
+			Scene.InitScene();
 
-			List<Shape> shapes = new List<Shape>();
+			Material red = new Material { color = new HDRColor(1, 1, 1) };
+			Material green = new Material { color = new HDRColor(0.01f, 1, 0.01f) };
 
-			Material red = new Material { color = new HDRColor(1, 0, 0) };
-			Material green = new Material { color = new HDRColor(0, 1, 0) };
-
-			shapes.Add(new Sphere 
+			Scene.shapes.Add(new Sphere 
 			{ 
 				position = new Vector3(0, 0, 4), 
 				material = red
 			});
 
-			shapes.Add(new Sphere
+			Scene.shapes.Add(new Sphere
 			{
 				radius = 0.5f,
 				position = new Vector3(0.75f, 0, 3.5f),
 				material = green
 			});
 
+			Scene.lights.Add(new PointLight
+			{
+				position = new Vector3(2, 0, 3),
+				intensity = 3
+			});
+
 			HDRColor[,] buffer = new HDRColor[(int)res.X, (int)res.Y];
 
-
-			Light light = new Light {
-				position = new Vector3(2, 0, 3),
-				Intensity = 3
-			};
-
+			//Send pixels rays
 			for (int x = 0; x < img.Width; x++)
 			{
 				for (int y = 0; y < img.Height; y++)
 				{
-					Ray camRay = cam.PixelToRay(new Vector2(x, y), res);
+					Ray camRay = Scene.camera.PixelToRay(new Vector2(x, y), res);
 
-					bool hasHit = GetClosestShape(camRay, shapes, out Hit hit);
-
-					if(hasHit)
-                    {
-						if(IsPointVisible(new Ray(hit.position, light.position- hit.position), shapes))
-                        {
-							HDRColor finalColor = hit.material.color;
-							finalColor *= light.color*Vector3.Dot(hit.normal, (light.position - hit.position).Normalize())*light.Intensity;
-
-							buffer[x, y] = finalColor;
-
-						}
-                        else
-                        {
-							buffer[x, y] = new HDRColor(0,0,0);
-						}
-
-
-					}
-					else
-					{
-						buffer[x, y] = new HDRColor(1, 0, 1);
-					}
+					buffer[x, y] = Scene.SendRay(camRay);
 				}
 			}
 
