@@ -59,6 +59,7 @@
     <Compile Include="Transformables\Lights\PointLight.cs" />
     <Compile Include="Transformables\Shapes\Shape.cs" />
     <Compile Include="Transformables\Shapes\Plane.cs" />
+    <Compile Include="Transformables\Shapes\Box.cs" />
     <Compile Include="Transformables\Shapes\Sphere.cs" />
     <Compile Include="Transformables\Transformable.cs" />
     <Compile Include="Material.cs" />

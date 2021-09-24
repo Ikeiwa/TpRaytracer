@@ -129,6 +129,9 @@ namespace Vim.Math3d
         [MethodImpl(MethodImplOptions.AggressiveInlining)] public Vector3(float value) : this(value, value, value) { }
         [MethodImpl(MethodImplOptions.AggressiveInlining)] public static Vector3 operator -(Vector3 value) => Zero - value;
         [MethodImpl(MethodImplOptions.AggressiveInlining)] public static float Dot(Vector3 value1, Vector3 value2) => value1.X * value2.X + value1.Y * value2.Y + value1.Z * value2.Z;
+        [MethodImpl(MethodImplOptions.AggressiveInlining)] public static Vector3 Abs(Vector3 value) => new Vector3(Math.Abs(value.X), Math.Abs(value.Y), Math.Abs(value.Z));
+        [MethodImpl(MethodImplOptions.AggressiveInlining)] public static Vector3 Sign(Vector3 value) => new Vector3(Math.Sign(value.X), Math.Sign(value.Y), Math.Sign(value.Z));
+        [MethodImpl(MethodImplOptions.AggressiveInlining)] public static Vector3 Step(Vector3 value1, Vector3 value2) => new Vector3((value1.X>=value2.X)?1:0, (value1.Y >= value2.Y) ? 1 : 0, (value1.Z >= value2.Z) ? 1 : 0);
         [MethodImpl(MethodImplOptions.AggressiveInlining)] public float Dot(Vector3 value) => Vector3.Dot(this, value);
         [MethodImpl(MethodImplOptions.AggressiveInlining)] public bool AlmostZero(float tolerance = Constants.Tolerance) => X.Abs() < tolerance && Y.Abs() < tolerance && Z.Abs() < tolerance;
         [MethodImpl(MethodImplOptions.AggressiveInlining)] public bool AnyComponentNegative() => MinComponent() < 0;

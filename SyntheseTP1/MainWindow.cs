@@ -77,7 +77,7 @@ namespace SyntheseTP1
 
 			Material white = new Material { color = new HDRColor(1, 1, 1) };
 			Material green = new Material { color = new HDRColor(0.01f, 1, 0.01f) };
-			Material floor = new Material { color = new HDRColor(0, 0, 0), roughness = 0.25f };
+			Material floor = new Material { color = new HDRColor(0, 0, 0), roughness = 0.75f };
 
 			Scene.shapes.Add(new Sphere
 			{
@@ -92,17 +92,16 @@ namespace SyntheseTP1
 				material = green
 			});
 
-			Scene.shapes.Add(new Plane
+			Scene.shapes.Add(new Box
 			{
-				position = new Vector3(0, 1.5f, 0),
-				rotation = Quaternion.CreateFromEulerAnglesDeg(0, 0, 0),
-				material = floor
+				position = new Vector3(-3, 0, 4),
+				material = white
 			});
 
 			Scene.shapes.Add(new Plane
 			{
-				position = new Vector3(0, -1.5f, 0),
-				rotation = Quaternion.CreateFromEulerAnglesDeg(0, 0, 180),
+				position = new Vector3(0, 1.5f, 0),
+				rotation = Quaternion.CreateFromEulerAnglesDeg(0, 0, 0),
 				material = floor
 			});
 
