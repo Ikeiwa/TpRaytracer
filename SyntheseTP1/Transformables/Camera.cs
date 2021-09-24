@@ -26,8 +26,6 @@ namespace SyntheseTP1
             pos = pos / res;
             pos = 2 * pos - 1;
 
-            Vector3 start = Vector3.Zero;
-
             switch (type)
             {
                 case CameraType.Perspective:
@@ -36,7 +34,7 @@ namespace SyntheseTP1
 
                     Vector3 dir = new Vector3(pos.X, pos.Y, 1);
 
-                    start = position;
+                    Vector3 start = position;
                     dir = dir.Transform(rotation);
 
                     return new Ray(start, dir.Normalize());

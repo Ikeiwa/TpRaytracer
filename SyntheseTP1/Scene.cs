@@ -15,6 +15,8 @@ namespace SyntheseTP1
         public static List<Shape> shapes { get; private set; }
         public static List<Light> lights { get; private set; }
 
+		public const int maxBounces = 8;
+
         public static void InitScene()
         {
             camera = new Camera();
@@ -53,8 +55,11 @@ namespace SyntheseTP1
 			return true;
 		}
 
-		public static HDRColor SendRay(Ray ray)
+		public static HDRColor SendRay(Ray ray, int bounce = 0)
         {
+			if(bounce > maxBounces)
+				return new HDRColor(1, 0, 1);
+
 			bool hasHit = GetClosestShape(ray, shapes, out Hit hit);
 
 			HDRColor energy = new HDRColor(0, 0, 0);
@@ -66,7 +71,7 @@ namespace SyntheseTP1
 					HDRColor surfColor = hit.material.color;
                     if (hit.material.roughness < 1)
                     {
-						surfColor = HDRColor.Lerp(SendRay(new Ray(hit.position,ray.direction.Reflect(hit.normal))), surfColor, hit.material.roughness);
+						surfColor = HDRColor.Lerp(SendRay(new Ray(hit.position,ray.direction.Reflect(hit.normal)), bounce+1), surfColor, hit.material.roughness);
 					}
 
 					float lightEnergy = light.GetEnergyAtPoint(hit.position);
