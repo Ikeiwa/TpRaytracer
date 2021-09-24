@@ -77,11 +77,11 @@ namespace Vim.Math3d
         [MethodImpl(MethodImplOptions.AggressiveInlining)] public static bool operator >(Vector2 x0, Vector2 x1) => x0.CompareTo(x1) > 0;
         [MethodImpl(MethodImplOptions.AggressiveInlining)] public static bool operator >=(Vector2 x0, Vector2 x1) => x0.CompareTo(x1) >= 0;
     }
-    [StructLayout(LayoutKind.Sequential, Pack=4)]
+    [StructLayout(LayoutKind.Sequential, Pack = 4)]
     [DataContract]
-    public readonly partial struct Vector3 
-        : IEquatable< Vector3 >
-        , IComparable< Vector3 >
+    public readonly partial struct Vector3
+        : IEquatable<Vector3>
+        , IComparable<Vector3>
     {
         [DataMember]
         public readonly float X;
@@ -96,7 +96,7 @@ namespace Vim.Math3d
         [MethodImpl(MethodImplOptions.AggressiveInlining)] public override bool Equals(object obj) => obj is Vector3 x && Equals(x);
         [MethodImpl(MethodImplOptions.AggressiveInlining)] public override int GetHashCode() => Hash.Combine(X.GetHashCode(), Y.GetHashCode(), Z.GetHashCode());
         [MethodImpl(MethodImplOptions.AggressiveInlining)] public override string ToString() => $"Vector3(X = {X}, Y = {Y}, Z = {Z})";
-        [MethodImpl(MethodImplOptions.AggressiveInlining)] public void Deconstruct(out float x, out float y, out float z) {x = X; y = Y; z = Z; }
+        [MethodImpl(MethodImplOptions.AggressiveInlining)] public void Deconstruct(out float x, out float y, out float z) { x = X; y = Y; z = Z; }
         [MethodImpl(MethodImplOptions.AggressiveInlining)] public bool Equals(Vector3 x) => X == x.X && Y == x.Y && Z == x.Z;
         [MethodImpl(MethodImplOptions.AggressiveInlining)] public static bool operator ==(Vector3 x0, Vector3 x1) => x0.Equals(x1);
         [MethodImpl(MethodImplOptions.AggressiveInlining)] public static bool operator !=(Vector3 x0, Vector3 x1) => !x0.Equals(x1);
@@ -110,18 +110,18 @@ namespace Vim.Math3d
         [MethodImpl(MethodImplOptions.AggressiveInlining)] public Vector3 SetX(float x) => new Vector3(x, Y, Z);
         [MethodImpl(MethodImplOptions.AggressiveInlining)] public Vector3 SetY(float x) => new Vector3(X, x, Z);
         [MethodImpl(MethodImplOptions.AggressiveInlining)] public Vector3 SetZ(float x) => new Vector3(X, Y, x);
-        [MethodImpl(MethodImplOptions.AggressiveInlining)] public static Vector3 operator +(Vector3 value1, Vector3 value2) => new Vector3(value1.X + value2.X,value1.Y + value2.Y,value1.Z + value2.Z);
-        [MethodImpl(MethodImplOptions.AggressiveInlining)] public static Vector3 operator +(Vector3 value1, float value2) => new Vector3(value1.X + value2,value1.Y + value2,value1.Z + value2);
-        [MethodImpl(MethodImplOptions.AggressiveInlining)] public static Vector3 operator +(float value1, Vector3 value2) => new Vector3(value1 + value2.X,value1 + value2.Y,value1 + value2.Z);
-        [MethodImpl(MethodImplOptions.AggressiveInlining)] public static Vector3 operator -(Vector3 value1, Vector3 value2) => new Vector3(value1.X - value2.X,value1.Y - value2.Y,value1.Z - value2.Z);
-        [MethodImpl(MethodImplOptions.AggressiveInlining)] public static Vector3 operator -(Vector3 value1, float value2) => new Vector3(value1.X - value2,value1.Y - value2,value1.Z - value2);
-        [MethodImpl(MethodImplOptions.AggressiveInlining)] public static Vector3 operator -(float value1, Vector3 value2) => new Vector3(value1 - value2.X,value1 - value2.Y,value1 - value2.Z);
-        [MethodImpl(MethodImplOptions.AggressiveInlining)] public static Vector3 operator *(Vector3 value1, Vector3 value2) => new Vector3(value1.X * value2.X,value1.Y * value2.Y,value1.Z * value2.Z);
-        [MethodImpl(MethodImplOptions.AggressiveInlining)] public static Vector3 operator *(Vector3 value1, float value2) => new Vector3(value1.X * value2,value1.Y * value2,value1.Z * value2);
-        [MethodImpl(MethodImplOptions.AggressiveInlining)] public static Vector3 operator *(float value1, Vector3 value2) => new Vector3(value1 * value2.X,value1 * value2.Y,value1 * value2.Z);
-        [MethodImpl(MethodImplOptions.AggressiveInlining)] public static Vector3 operator /(Vector3 value1, Vector3 value2) => new Vector3(value1.X / value2.X,value1.Y / value2.Y,value1.Z / value2.Z);
-        [MethodImpl(MethodImplOptions.AggressiveInlining)] public static Vector3 operator /(Vector3 value1, float value2) => new Vector3(value1.X / value2,value1.Y / value2,value1.Z / value2);
-        [MethodImpl(MethodImplOptions.AggressiveInlining)] public static Vector3 operator /(float value1, Vector3 value2) => new Vector3(value1 / value2.X,value1 / value2.Y,value1 / value2.Z);
+        [MethodImpl(MethodImplOptions.AggressiveInlining)] public static Vector3 operator +(Vector3 value1, Vector3 value2) => new Vector3(value1.X + value2.X, value1.Y + value2.Y, value1.Z + value2.Z);
+        [MethodImpl(MethodImplOptions.AggressiveInlining)] public static Vector3 operator +(Vector3 value1, float value2) => new Vector3(value1.X + value2, value1.Y + value2, value1.Z + value2);
+        [MethodImpl(MethodImplOptions.AggressiveInlining)] public static Vector3 operator +(float value1, Vector3 value2) => new Vector3(value1 + value2.X, value1 + value2.Y, value1 + value2.Z);
+        [MethodImpl(MethodImplOptions.AggressiveInlining)] public static Vector3 operator -(Vector3 value1, Vector3 value2) => new Vector3(value1.X - value2.X, value1.Y - value2.Y, value1.Z - value2.Z);
+        [MethodImpl(MethodImplOptions.AggressiveInlining)] public static Vector3 operator -(Vector3 value1, float value2) => new Vector3(value1.X - value2, value1.Y - value2, value1.Z - value2);
+        [MethodImpl(MethodImplOptions.AggressiveInlining)] public static Vector3 operator -(float value1, Vector3 value2) => new Vector3(value1 - value2.X, value1 - value2.Y, value1 - value2.Z);
+        [MethodImpl(MethodImplOptions.AggressiveInlining)] public static Vector3 operator *(Vector3 value1, Vector3 value2) => new Vector3(value1.X * value2.X, value1.Y * value2.Y, value1.Z * value2.Z);
+        [MethodImpl(MethodImplOptions.AggressiveInlining)] public static Vector3 operator *(Vector3 value1, float value2) => new Vector3(value1.X * value2, value1.Y * value2, value1.Z * value2);
+        [MethodImpl(MethodImplOptions.AggressiveInlining)] public static Vector3 operator *(float value1, Vector3 value2) => new Vector3(value1 * value2.X, value1 * value2.Y, value1 * value2.Z);
+        [MethodImpl(MethodImplOptions.AggressiveInlining)] public static Vector3 operator /(Vector3 value1, Vector3 value2) => new Vector3(value1.X / value2.X, value1.Y / value2.Y, value1.Z / value2.Z);
+        [MethodImpl(MethodImplOptions.AggressiveInlining)] public static Vector3 operator /(Vector3 value1, float value2) => new Vector3(value1.X / value2, value1.Y / value2, value1.Z / value2);
+        [MethodImpl(MethodImplOptions.AggressiveInlining)] public static Vector3 operator /(float value1, Vector3 value2) => new Vector3(value1 / value2.X, value1 / value2.Y, value1 / value2.Z);
         public static Vector3 One = new Vector3(1f);
         public static Vector3 UnitX = Zero.SetX(1f);
         public static Vector3 UnitY = Zero.SetY(1f);

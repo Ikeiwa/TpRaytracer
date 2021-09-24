@@ -14,7 +14,7 @@ namespace SyntheseTP1
         public double G = 0;
         public double B = 0;
 
-        public HDRColor(double R,double G,double B,double A=1)
+        public HDRColor(double R,double G,double B)
         {
             this.R = R;
             this.G = G;
@@ -75,9 +75,8 @@ namespace SyntheseTP1
         {
             return new HDRColor(
                 MathEx.Lerp(A.R,B.R,t),
-                MathEx.Lerp(A.R,B.R,t),
-                MathEx.Lerp(A.R,B.R,t),
-                MathEx.Lerp(A.R,B.R,t)
+                MathEx.Lerp(A.G,B.G,t),
+                MathEx.Lerp(A.B,B.B,t)
             );
         }
     }

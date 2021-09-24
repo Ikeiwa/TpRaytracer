@@ -63,13 +63,18 @@ namespace SyntheseTP1
 			{
 				foreach(Light light in lights)
                 {
+					HDRColor surfColor = hit.material.color;
+                    if (hit.material.roughness < 1)
+                    {
+						surfColor = HDRColor.Lerp(SendRay(new Ray(hit.position,ray.direction.Reflect(hit.normal))), surfColor, hit.material.roughness);
+					}
+
 					float lightEnergy = light.GetEnergyAtPoint(hit.position);
 					if (lightEnergy>0)
 					{
-						HDRColor finalColor = hit.material.color;
 						float LdotN = MathOps.Clamp(Vector3.Dot(hit.normal, -light.GetDirection(hit.position)),0,1);
-						finalColor *= light.color * LdotN * lightEnergy;
-						energy += finalColor;
+						surfColor *= light.color * LdotN * lightEnergy;
+						energy += surfColor;
 					}
 				}
 
