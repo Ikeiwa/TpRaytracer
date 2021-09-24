@@ -15,6 +15,7 @@ using Vim.Math3d;
 using SyntheseTP1.Shapes;
 using Sphere = SyntheseTP1.Shapes.Sphere;
 using SyntheseTP1.Transformables.Lights;
+using Plane = SyntheseTP1.Shapes.Plane;
 
 namespace SyntheseTP1
 {
@@ -23,8 +24,6 @@ namespace SyntheseTP1
 		private DirectBitmap img;
 
 		private const int WM_KEYDOWN = 0x0100;
-
-		private Vector2 res;
 
 		private int mode = 0;
 		private DateTime lastFrame;
@@ -35,7 +34,13 @@ namespace SyntheseTP1
 
 		private List<GameObject> gameObjects;
 
-		
+		DirectBitmap fullRes;
+		DirectBitmap smallRes;
+
+		bool highRes = true;
+
+		float rotX = 0;
+		float rotY = 0;
 
 		public MainWindow()
 		{
@@ -47,17 +52,56 @@ namespace SyntheseTP1
 
 			SetStyle(ControlStyles.AllPaintingInWmPaint | ControlStyles.UserPaint | ControlStyles.OptimizedDoubleBuffer, true);
 
-			img = new DirectBitmap(ClientSize.Width, ClientSize.Height);
-			res = new Vector2(ClientSize.Width, ClientSize.Height);
 
+			fullRes = new DirectBitmap(ClientSize.Width, ClientSize.Height);
+			smallRes = new DirectBitmap(ClientSize.Width/8, ClientSize.Height/8);
+			img = highRes ? fullRes : smallRes;
+
+			SetupScene();
 			DrawRayTrace();
 			img.Bitmap.Save("img.png", ImageFormat.Png);
 		}
 
+
+		public void SetupScene()
+        {
+			Scene.InitScene();
+
+			Material red = new Material { color = new HDRColor(1, 1, 1) };
+			Material green = new Material { color = new HDRColor(0.01f, 1, 0.01f) };
+
+			Scene.shapes.Add(new Sphere
+			{
+				position = new Vector3(0, 0, 4),
+				material = red
+			});
+
+			Scene.shapes.Add(new Sphere
+			{
+				radius = 0.5f,
+				position = new Vector3(0.75f, 0, 3.5f),
+				material = green
+			});
+
+			Scene.shapes.Add(new Plane
+			{
+				position = new Vector3(0, 1, 0),
+				rotation = Quaternion.CreateFromEulerAnglesDeg(0, 0, 0),
+				material = red
+			});
+
+			Scene.lights.Add(new PointLight
+			{
+				position = new Vector3(2, 0.5f, 3),
+				intensity = 3
+			});
+		}
+
 		private void MainWindow_Resize(object sender, EventArgs e)
 		{
-			img = new DirectBitmap(ClientSize.Width, ClientSize.Height);
-			res = new Vector2(ClientSize.Width, ClientSize.Height);
+			fullRes = new DirectBitmap(ClientSize.Width, ClientSize.Height);
+			smallRes = new DirectBitmap(ClientSize.Width / 8, ClientSize.Height / 8);
+			img = highRes ? fullRes : smallRes;
 		}
 
 		public async void MainLoop()
@@ -94,7 +138,7 @@ namespace SyntheseTP1
             switch (mode)
             {
 				case 0:
-					graphics.DrawImage(img.Bitmap, new Point(0, 0));
+					graphics.DrawImage(img.Bitmap, 0,0,ClientSize.Width,ClientSize.Height);
 					break;
 				case 1:
 					foreach(GameObject gameObject in gameObjects)
@@ -136,8 +180,8 @@ namespace SyntheseTP1
 				for (int y = 0; y < img.Height; y++)
 				{
 					Vector2 pos = new Vector2(x, y);
-					pos -= res;
-					pos /= res;
+					pos -= img.Res;
+					pos /= img.Res;
 					float distance = distanceToMandelbrot(pos);
 					Console.WriteLine(distance);
 					distance = MathOps.Clamp((float)Math.Pow(4.0f * distance, 0.2f), 0.0f, 1.0f);
@@ -159,7 +203,7 @@ namespace SyntheseTP1
 				{
 					int red = 0;
 					Vector2 pos = new Vector2(x, y);
-					pos -= res / 2;
+					pos -= img.Res / 2;
 
 					if (pos.Length() < 50.0f)
 						red = 255;
@@ -179,7 +223,7 @@ namespace SyntheseTP1
 				{
 					int red = 0;
 					Vector2 pos = new Vector2(x, y);
-					pos -= res / 2;
+					pos -= img.Res / 2;
 
 					red = (int)((1-MathOps.Clamp(pos.Length()/200.0f,0.0f,1.0f))*255);
 
@@ -214,38 +258,16 @@ namespace SyntheseTP1
 
 		private void DrawRayTrace()
         {
-			Scene.InitScene();
+			Scene.camera.rotation = Quaternion.CreateFromYawPitchRoll(rotY * (float)MathEx.DegToRad, rotX * (float)MathEx.DegToRad, 0);
 
-			Material red = new Material { color = new HDRColor(1, 1, 1) };
-			Material green = new Material { color = new HDRColor(0.01f, 1, 0.01f) };
-
-			Scene.shapes.Add(new Sphere 
-			{ 
-				position = new Vector3(0, 0, 4), 
-				material = red
-			});
-
-			Scene.shapes.Add(new Sphere
-			{
-				radius = 0.5f,
-				position = new Vector3(0.75f, 0, 3.5f),
-				material = green
-			});
-
-			Scene.lights.Add(new PointLight
-			{
-				position = new Vector3(2, 0, 3),
-				intensity = 3
-			});
-
-			HDRColor[,] buffer = new HDRColor[(int)res.X, (int)res.Y];
+			HDRColor[,] buffer = new HDRColor[(int)img.Res.X, (int)img.Res.Y];
 
 			//Send pixels rays
 			for (int x = 0; x < img.Width; x++)
 			{
 				for (int y = 0; y < img.Height; y++)
 				{
-					Ray camRay = Scene.camera.PixelToRay(new Vector2(x, y), res);
+					Ray camRay = Scene.camera.PixelToRay(new Vector2(x, y), img.Res);
 
 					buffer[x, y] = Scene.SendRay(camRay);
 				}
@@ -261,6 +283,7 @@ namespace SyntheseTP1
 			}
 
 			Invalidate();
+			Console.WriteLine("Update");
 		}
 
 		public bool PreFilterMessage(ref Message m)
@@ -270,7 +293,7 @@ namespace SyntheseTP1
 			{
 				switch ((int)m.WParam)
 				{
-					case (int)Keys.Escape:
+					/*case (int)Keys.Escape:
 						running = false;
 						break;
 					case (int)Keys.NumPad0:
@@ -302,11 +325,71 @@ namespace SyntheseTP1
 						gameObjects.Add(circle);
 						if (loopTask == null)
 							loopTask = Task.Run(MainLoop);
-						break;
-					case (int)Keys.NumPad5:
+						break;*/
+
+					//FORCE RENDER
+					case (int)Keys.Decimal:
 						mode = 0;
 						DrawRayTrace();
 						img.Bitmap.Save("img.png", ImageFormat.Png);
+						break;
+
+					//RESOLUTION SWAP
+					case (int)Keys.NumPad0:
+						highRes = !highRes;
+						img = highRes ? fullRes : smallRes;
+						DrawRayTrace();
+						break;
+
+					//CAMERA TRANSLATION
+					case (int)Keys.Q:
+						if (Scene.camera != null)
+							Scene.camera.Translate(-0.1f, 0, 0);
+						DrawRayTrace();
+						break;
+					case (int)Keys.D:
+						if (Scene.camera != null)
+							Scene.camera.Translate(0.1f, 0, 0);
+						DrawRayTrace();
+						break;
+					case (int)Keys.Z:
+						if (Scene.camera != null)
+							Scene.camera.Translate(0, 0, 0.1f);
+						DrawRayTrace();
+						break;
+					case (int)Keys.S:
+						if (Scene.camera != null)
+							Scene.camera.Translate(0, 0, -0.1f);
+						DrawRayTrace();
+						break;
+					case (int)Keys.A:
+						if (Scene.camera != null)
+							Scene.camera.Translate(0, 0.1f, 0);
+						DrawRayTrace();
+						break;
+					case (int)Keys.E:
+						if (Scene.camera != null)
+							Scene.camera.Translate(0, -0.1f, 0);
+						DrawRayTrace();
+						break;
+
+
+					//CAMERA ROTATION
+					case (int)Keys.Left:
+						rotY -= 5;
+						DrawRayTrace();
+						break;
+					case (int)Keys.Right:
+						rotY += 5;
+						DrawRayTrace();
+						break;
+					case (int)Keys.Up:
+						rotX += 5;
+						DrawRayTrace();
+						break;
+					case (int)Keys.Down:
+						rotX -= 5;
+						DrawRayTrace();
 						break;
 				}
 			}

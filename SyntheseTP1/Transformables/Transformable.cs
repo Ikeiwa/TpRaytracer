@@ -17,5 +17,18 @@ namespace SyntheseTP1.Transformables
         {
             return Matrix4x4.CreateTRS(position, rotation, scale);
         }
+
+        public void Translate(float X,float Y,float Z,bool relative = true)
+        {
+            if(relative)
+                position += new Vector3(X, Y, Z).Transform(rotation);
+            else
+                position += new Vector3(X, Y, Z);
+        }
+
+        public void Rotate(float X,float Y,float Z)
+        {
+            rotation *= Quaternion.CreateFromEulerAnglesDeg(X, Y, Z);
+        }
     }
 }

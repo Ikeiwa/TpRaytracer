@@ -22,9 +22,8 @@ namespace SyntheseTP1
 
             Vector3 dir = new Vector3(pos.X, pos.Y, 1);
 
-            Vector3 start = Vector3.Zero.Transform(rotation);
+            Vector3 start = position;
             dir = dir.Transform(rotation);
-            dir = dir - start;
 
             return new Ray(start, dir.Normalize());
         }
