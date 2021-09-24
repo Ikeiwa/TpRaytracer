@@ -16,6 +16,7 @@ using SyntheseTP1.Shapes;
 using Sphere = SyntheseTP1.Shapes.Sphere;
 using SyntheseTP1.Transformables.Lights;
 using Plane = SyntheseTP1.Shapes.Plane;
+using System.Diagnostics;
 
 namespace SyntheseTP1
 {
@@ -149,129 +150,28 @@ namespace SyntheseTP1
             }
 		}
 
-		public float distanceToMandelbrot(Vector2 c)
-		{
-			float di = 1.0f;
-			Vector2 z = Vector2.Zero;
-			float m2 = 0.0f;
-			Vector2 dz = Vector2.Zero;
-
-			for (int i = 0; i < 300; i++)
-			{
-				if (m2 > 1024.0f) { di = 0.0f; break; }
-
-				dz = 2.0f*new Vector2(z.X*dz.X-z.Y*dz.Y,z.X*dz.Y+z.Y*dz.X)+Vector2.UnitX;
-
-				z = new Vector2(z.X * z.X - z.Y * z.Y, 2.0f * z.X * z.Y) + c;
-
-				m2 = Vector2.Dot(z, z);
-			}
-
-			float d = 0.5f * (float)Math.Sqrt(Vector2.Dot(z, z) / Vector2.Dot(dz, dz)) * (float)Math.Log(Vector2.Dot(z, z));
-			if (di > 0.5f) d = 0.0f;
-
-			return d;
-		}
-
-		private void DrawMandlebrot()
-		{
-			for (int x = 0; x < img.Width; x++)
-			{
-				for (int y = 0; y < img.Height; y++)
-				{
-					Vector2 pos = new Vector2(x, y);
-					pos -= img.Res;
-					pos /= img.Res;
-					float distance = distanceToMandelbrot(pos);
-					Console.WriteLine(distance);
-					distance = MathOps.Clamp((float)Math.Pow(4.0f * distance, 0.2f), 0.0f, 1.0f);
-
-					int red = (int)(distance*255);
-
-					img.SetPixel(x, y, Color.FromArgb(255, red, 0, 0));
-				}
-			}
-
-			Invalidate();
-		}
-
-		private void DrawCircle()
-		{
-			for (int x = 0; x < img.Width; x++)
-			{
-				for (int y = 0; y < img.Height; y++)
-				{
-					int red = 0;
-					Vector2 pos = new Vector2(x, y);
-					pos -= img.Res / 2;
-
-					if (pos.Length() < 50.0f)
-						red = 255;
-
-					img.SetPixel(x, y, Color.FromArgb(255, red, 0, 0));
-				}
-			}
-
-			Invalidate();
-		}
-
-		private void DrawCircleGradient()
-		{
-			for (int x = 0; x < img.Width; x++)
-			{
-				for (int y = 0; y < img.Height; y++)
-				{
-					int red = 0;
-					Vector2 pos = new Vector2(x, y);
-					pos -= img.Res / 2;
-
-					red = (int)((1-MathOps.Clamp(pos.Length()/200.0f,0.0f,1.0f))*255);
-
-					img.SetPixel(x, y, Color.FromArgb(255, red, 0, 0));
-				}
-			}
-
-			Invalidate();
-		}
-
-		private void DrawChecker()
-		{
-			float size = 10;
-
-			for (int x = 0; x < img.Width; x++)
-			{
-				for (int y = 0; y < img.Height; y++)
-				{
-					int red = 0;
-					if ((Math.Floor(x/size)+ Math.Floor(y / size)) % 2 == 0)
-						red = 255;
-
-					img.SetPixel(x, y, Color.FromArgb(255, red, 0, 0));
-				}
-			}
-
-			Invalidate();
-		}
-
-
-		
-
 		private void DrawRayTrace()
         {
 			Scene.camera.rotation = Quaternion.CreateFromYawPitchRoll(rotY * (float)MathEx.DegToRad, rotX * (float)MathEx.DegToRad, 0);
 
 			HDRColor[,] buffer = new HDRColor[(int)img.Res.X, (int)img.Res.Y];
 
+			Stopwatch stopwatch = new Stopwatch();
+			stopwatch.Start();
+
 			//Send pixels rays
-			for (int x = 0; x < img.Width; x++)
-			{
+			Parallel.For(0, img.Width, 
+			x => {
 				for (int y = 0; y < img.Height; y++)
 				{
 					Ray camRay = Scene.camera.PixelToRay(new Vector2(x, y), img.Res);
 
 					buffer[x, y] = Scene.SendRay(camRay);
 				}
-			}
+			});
+
+			stopwatch.Stop();
+			Console.WriteLine("Rendered in {0} ms", stopwatch.ElapsedMilliseconds);
 
 			//Render buffer to screen
 			for (int x = 0; x < img.Width; x++)
@@ -283,7 +183,6 @@ namespace SyntheseTP1
 			}
 
 			Invalidate();
-			Console.WriteLine("Update");
 		}
 
 		public bool PreFilterMessage(ref Message m)
@@ -293,40 +192,6 @@ namespace SyntheseTP1
 			{
 				switch ((int)m.WParam)
 				{
-					/*case (int)Keys.Escape:
-						running = false;
-						break;
-					case (int)Keys.NumPad0:
-						mode = 0;
-						DrawMandlebrot();
-						img.Bitmap.Save("img.png", ImageFormat.Png);
-						return true;
-					case (int)Keys.NumPad1:
-						mode = 0;
-						DrawCircle();
-						img.Bitmap.Save("img.png", ImageFormat.Png);
-						return true;
-					case (int)Keys.NumPad2:
-						mode = 0;
-						DrawChecker();
-						img.Bitmap.Save("img.png", ImageFormat.Png);
-						return true;
-					case (int)Keys.NumPad3:
-						mode = 0;
-						DrawCircleGradient();
-						img.Bitmap.Save("img.png", ImageFormat.Png);
-						return true;
-					case (int)Keys.NumPad4:
-						mode = 1;
-						Time.deltaTime = 1;
-						gameObjects = new List<GameObject>();
-						Circle circle = new Circle(Color.Red);
-						circle.AddComponent<RigidBody2D>().AddForce(new Vector3(50,0,0));
-						gameObjects.Add(circle);
-						if (loopTask == null)
-							loopTask = Task.Run(MainLoop);
-						break;*/
-
 					//FORCE RENDER
 					case (int)Keys.Decimal:
 						mode = 0;
