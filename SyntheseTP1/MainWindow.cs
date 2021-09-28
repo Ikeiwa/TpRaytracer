@@ -46,6 +46,8 @@ namespace SyntheseTP1
 
 		bool highRes = false;
 
+		const int perPixelRays = 10;
+
 		float rotX = 0;
 		float rotY = 0;
 
@@ -77,7 +79,7 @@ namespace SyntheseTP1
 
 			Material white = new Material { color = new HDRColor(1, 1, 1) };
 			Material green = new Material { color = new HDRColor(0.01f, 1, 0.01f) };
-			Material floor = new Material { color = new HDRColor(1, 1, 1) };
+			Material floor = new Material { color = new HDRColor(1, 0, 0), type = MaterialType.Mirror };
 
 			Scene.shapes.Add(new Sphere
 			{
@@ -87,15 +89,16 @@ namespace SyntheseTP1
 
 			Scene.shapes.Add(new Sphere
 			{
+				position = new Vector3(0, 0, 4),
+				material = white,
+				radius = 5
+			});
+
+			Scene.shapes.Add(new Sphere
+			{
 				radius = 0.5f,
 				position = new Vector3(0.75f, 0, 3.5f),
 				material = green
-			});
-
-			Scene.shapes.Add(new Box
-			{
-				position = new Vector3(-3, 0, 4),
-				material = white
 			});
 
 			Scene.shapes.Add(new Plane
@@ -108,7 +111,7 @@ namespace SyntheseTP1
 			Scene.lights.Add(new PointLight
 			{
 				position = new Vector3(2, 0.5f, 3),
-				intensity = 3,
+				intensity = 1,
 				radius = 0.1f
 			});
 		}
@@ -172,6 +175,7 @@ namespace SyntheseTP1
 								highRes = !highRes;
 								SetupBuffers();
 								DrawRayTrace();
+								img.Bitmap.Save("img.png", ImageFormat.Png);
 							}
 							break;
 
@@ -269,16 +273,38 @@ namespace SyntheseTP1
 
 		private void DrawRayTrace()
         {
-			//Send pixels rays
-			Parallel.For(0, img.Width, 
-			x => {
-				for (int y = 0; y < img.Height; y++)
-				{
-					Ray camRay = Scene.camera.PixelToRay(new Vector2(x, y), img.Res);
+            //Send pixels rays
+            if (highRes)
+            {
+				Parallel.For(0, img.Width,
+				x => {
+					for (int y = 0; y < img.Height; y++)
+					{
+						Ray camRay = Scene.camera.PixelToRay(new Vector2(x, y), img.Res);
 
-					buffer[x, y] = Scene.SendRay(camRay);
-				}
-			});
+						List<HDRColor> results = new List<HDRColor>();
+						for(int i = 0; i < perPixelRays; i++)
+                        {
+							results.Add(Scene.SendRay(camRay));
+                        }
+						HDRColor result = HDRColor.GetAverage(results);
+
+						buffer[x, y] = result;
+					}
+				});
+			}
+            else
+            {
+				Parallel.For(0, img.Width,
+				x => {
+					for (int y = 0; y < img.Height; y++)
+					{
+						Ray camRay = Scene.camera.PixelToRay(new Vector2(x, y), img.Res);
+						buffer[x, y] = Scene.SendRay(camRay);
+					}
+				});
+			}
+			
 
 			//Render buffer to screen
 			Parallel.For(0, img.Width,

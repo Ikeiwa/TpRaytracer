@@ -70,26 +70,30 @@ namespace SyntheseTP1
 
 			if (hasHit)
 			{
-				foreach(Light light in lights)
-                {
-					HDRColor surfColor = hit.material.color;
-					/*if (hit.material.roughness < 1)
-                    {
-						surfColor = HDRColor.Lerp(SendRay(new Ray(hit.position,ray.direction.Reflect(hit.normal)), bounce+1), surfColor, hit.material.roughness);
-					}*/
+				switch (hit.material.type)
+				{
+					case MaterialType.Diffuse:
+						foreach (Light light in lights)
+						{
+					
+						
+							float lightEnergy = 0;
+							for (int i = 0; i < maxLightRays; i++)
+							{
+								lightEnergy += light.GetEnergyAtPoint(hit.position, hit.normal);
+							}
+							lightEnergy /= (float)maxLightRays;
 
-					float lightEnergy = 0;
-					for(int i=0;i< maxLightRays; i++)
-                    {
-						lightEnergy += light.GetEnergyAtPoint(hit.position,hit.normal);
-                    }
-					lightEnergy /= (float)maxLightRays;
-
-					if (lightEnergy>0)
-					{
-						surfColor *= light.color * lightEnergy;
-						energy += surfColor;
-					}
+							if (lightEnergy > 0)
+							{
+								energy += hit.material.color * light.color * lightEnergy;
+							}
+						}
+						break;
+					case MaterialType.Mirror:
+						energy = SendRay(new Ray(hit.position, ray.direction.Reflect(hit.normal)), bounce + 1) * hit.material.color;
+						break;
+					
 				}
 
 				return energy;

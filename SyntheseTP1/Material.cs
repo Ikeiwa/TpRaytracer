@@ -81,10 +81,19 @@ namespace SyntheseTP1
         }
     }
 
+    public enum MaterialType
+    {
+        Diffuse,
+        Mirror,
+        Glass
+    }
+
     class Material
     {
         public HDRColor color;
         public float metallic = 0;
         public float roughness = 1;
+        public MaterialType type = MaterialType.Diffuse;
+        public float IOR = 1;
     }
 }

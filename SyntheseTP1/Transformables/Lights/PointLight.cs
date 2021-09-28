@@ -24,7 +24,7 @@ namespace SyntheseTP1.Transformables.Lights
             Ray ray = new Ray(posOffset, point - posOffset);
             if (!shadows || Scene.IsPointVisible(ray, Scene.shapes))
             {
-                float NdotL = MathOps.Clamp(Vector3.Dot(normal, -(point - posOffset).Normalize()), 0, 1) * (float)Math.PI;
+                float NdotL = MathOps.Clamp(Math.Abs(Vector3.Dot(normal, -(point - posOffset).Normalize())), 0, 1) * (float)Math.PI;
 
                 return intensity * NdotL / (ray.length*ray.length);
             }
