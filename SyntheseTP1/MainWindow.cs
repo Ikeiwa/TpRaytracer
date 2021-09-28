@@ -77,7 +77,7 @@ namespace SyntheseTP1
 
 			Material white = new Material { color = new HDRColor(1, 1, 1) };
 			Material green = new Material { color = new HDRColor(0.01f, 1, 0.01f) };
-			Material floor = new Material { color = new HDRColor(0, 0, 0), roughness = 0.75f };
+			Material floor = new Material { color = new HDRColor(1, 1, 1) };
 
 			Scene.shapes.Add(new Sphere
 			{
@@ -108,7 +108,8 @@ namespace SyntheseTP1
 			Scene.lights.Add(new PointLight
 			{
 				position = new Vector3(2, 0.5f, 3),
-				intensity = 3
+				intensity = 3,
+				radius = 0.1f
 			});
 		}
 
@@ -268,9 +269,6 @@ namespace SyntheseTP1
 
 		private void DrawRayTrace()
         {
-			/*Stopwatch stopwatch = new Stopwatch();
-			stopwatch.Start();*/
-
 			//Send pixels rays
 			Parallel.For(0, img.Width, 
 			x => {
@@ -290,9 +288,6 @@ namespace SyntheseTP1
 					img.SetPixel(x, y, buffer[x, y].ToColor());
 				}
 			});
-
-			/*stopwatch.Stop();
-			Console.WriteLine("Rendered in {0} ms", stopwatch.ElapsedMilliseconds);*/
 
 			Invalidate();
 		}

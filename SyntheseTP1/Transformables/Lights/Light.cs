@@ -12,9 +12,8 @@ namespace SyntheseTP1.Transformables.Lights
      {
         public float intensity = 1;
         public HDRColor color = new HDRColor(1,1,1);
+        public bool shadows = true;
 
-        public abstract float GetEnergyAtPoint(Vector3 point);
-
-        public abstract Vector3 GetDirection(Vector3 point);
+        public abstract float GetEnergyAtPoint(Vector3 point, Vector3 normal);
     }
 }

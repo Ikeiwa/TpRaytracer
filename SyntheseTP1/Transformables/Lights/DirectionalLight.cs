@@ -9,14 +9,10 @@ namespace SyntheseTP1.Transformables.Lights
 {
     class DirectionalLight : Light
     {
-        public override Vector3 GetDirection(Vector3 point = default)
-        {
-            return Vector3.UnitZ.Transform(rotation);
-        }
 
-        public override float GetEnergyAtPoint(Vector3 point)
+        public override float GetEnergyAtPoint(Vector3 point, Vector3 normal)
         {
-            if (Scene.IsPointVisible(new Ray(point, -GetDirection()*float.MaxValue), Scene.shapes))
+            if (!shadows || Scene.IsPointVisible(new Ray(point, -Vector3.UnitZ.Transform(rotation) * float.MaxValue), Scene.shapes))
             {
                 return intensity;
             }

@@ -24,9 +24,9 @@ namespace SyntheseTP1
         public Color ToColor()
         {
             return Color.FromArgb(255,
-                                  (int)MathOps.Clamp(R * 255, 0, 255),
-                                  (int)MathOps.Clamp(G * 255, 0, 255),
-                                  (int)MathOps.Clamp(B * 255, 0, 255));
+                                  (int)MathOps.Clamp(Math.Pow(R, 1 / 2.2f) * 255, 0, 255),
+                                  (int)MathOps.Clamp(Math.Pow(G, 1 / 2.2f) * 255, 0, 255),
+                                  (int)MathOps.Clamp(Math.Pow(B, 1 / 2.2f) * 255, 0, 255));
         }
 
         public static HDRColor GetAverage(List<HDRColor> colors)

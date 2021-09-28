@@ -16,12 +16,16 @@ namespace SyntheseTP1
         public static List<Light> lights { get; private set; }
 
 		public const int maxBounces = 8;
+		public const int maxLightRays = 10;
 
-        public static void InitScene()
+		public static Random rand;
+
+		public static void InitScene()
         {
             camera = new Camera();
             shapes = new List<Shape>();
             lights = new List<Light>();
+			rand = new Random();
         }
 
 		public static bool GetClosestShape(Ray ray, List<Shape> shapes, out Hit hit)
@@ -69,16 +73,21 @@ namespace SyntheseTP1
 				foreach(Light light in lights)
                 {
 					HDRColor surfColor = hit.material.color;
-                    if (hit.material.roughness < 1)
+					/*if (hit.material.roughness < 1)
                     {
 						surfColor = HDRColor.Lerp(SendRay(new Ray(hit.position,ray.direction.Reflect(hit.normal)), bounce+1), surfColor, hit.material.roughness);
-					}
+					}*/
 
-					float lightEnergy = light.GetEnergyAtPoint(hit.position);
+					float lightEnergy = 0;
+					for(int i=0;i< maxLightRays; i++)
+                    {
+						lightEnergy += light.GetEnergyAtPoint(hit.position,hit.normal);
+                    }
+					lightEnergy /= (float)maxLightRays;
+
 					if (lightEnergy>0)
 					{
-						float LdotN = MathOps.Clamp(Vector3.Dot(hit.normal, -light.GetDirection(hit.position)),0,1);
-						surfColor *= light.color * LdotN * lightEnergy;
+						surfColor *= light.color * lightEnergy;
 						energy += surfColor;
 					}
 				}

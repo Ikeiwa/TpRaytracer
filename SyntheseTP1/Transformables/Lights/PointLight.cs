@@ -9,16 +9,24 @@ namespace SyntheseTP1.Transformables.Lights
 {
     class PointLight : Light
     {
-        public override Vector3 GetDirection(Vector3 point)
-        {
-            return (point - position).Normalize();
-        }
+        public float radius = 0.1f;
 
-        public override float GetEnergyAtPoint(Vector3 point)
+        public override float GetEnergyAtPoint(Vector3 point, Vector3 normal)
         {
-            if (Scene.IsPointVisible(new Ray(position, point - position), Scene.shapes))
+            
+            Vector3 posOffset = new Vector3(MathEx.NextFloat(Scene.rand,-1.0f, 1.0f), 
+                                            MathEx.NextFloat(Scene.rand, -1.0f, 1.0f), 
+                                            MathEx.NextFloat(Scene.rand, -1.0f, 1.0f));
+            posOffset = posOffset.Normalize() * MathEx.NextFloat(Scene.rand, 0f, radius);
+
+            posOffset += position;
+
+            Ray ray = new Ray(posOffset, point - posOffset);
+            if (!shadows || Scene.IsPointVisible(ray, Scene.shapes))
             {
-                return intensity;
+                float NdotL = MathOps.Clamp(Vector3.Dot(normal, -(point - posOffset).Normalize()), 0, 1) * (float)Math.PI;
+
+                return intensity * NdotL / (ray.length*ray.length);
             }
             return 0;
         }
