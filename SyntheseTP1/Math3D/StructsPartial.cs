@@ -81,6 +81,16 @@ namespace Vim.Math3d
         public Vector3 Reflect(Vector3 normal)
             => this - normal * Dot(normal) * 2f;
 
+        public Vector3 Refract(float IOR, Vector3 normal)
+        {
+            float N_dot_I = Dot(normal, this);
+            float k = 1.0f - IOR * IOR * (1.0f - N_dot_I * N_dot_I);
+            if (k < 0.0f)
+                return Reflect(normal);
+            else
+                return IOR * this - (IOR * N_dot_I + (float)Math.Sqrt(k)) * normal;
+        }
+
         /// <summary>
         /// Transforms a vector normal by the given matrix.
         /// </summary>

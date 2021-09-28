@@ -24,7 +24,7 @@ namespace SyntheseTP1
         {
             Vector2 pos = new Vector2(pixel.X + 0.5f, pixel.Y + 0.5f);
             pos = pos / res;
-            pos = 2 * pos - 1;
+            pos = new Vector2(2 * pos.X - 1,1 - 2 * pos.Y);
 
             switch (type)
             {

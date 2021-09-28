@@ -14,10 +14,10 @@ namespace SyntheseTP1.Transformables.Lights
         public override float GetEnergyAtPoint(Vector3 point, Vector3 normal)
         {
             
-            Vector3 posOffset = new Vector3(MathEx.NextFloat(Scene.rand,-1.0f, 1.0f), 
-                                            MathEx.NextFloat(Scene.rand, -1.0f, 1.0f), 
-                                            MathEx.NextFloat(Scene.rand, -1.0f, 1.0f));
-            posOffset = posOffset.Normalize() * MathEx.NextFloat(Scene.rand, 0f, radius);
+            Vector3 posOffset = new Vector3(MathEx.NextFloat(-1.0f, 1.0f), 
+                                            MathEx.NextFloat(-1.0f, 1.0f), 
+                                            MathEx.NextFloat(-1.0f, 1.0f));
+            posOffset = posOffset.Normalize() * MathEx.NextFloat(0f, radius);
 
             posOffset += position;
 

@@ -16,12 +16,12 @@ namespace SyntheseTP1
         public static float Lerp(float A,float B, float t) {return A * (1 - t) + B * t;}
         public static double Lerp(double A, double B, float t) {return A * (1 - t) + B * t;}
 
-        public static float NextFloat(Random random)
+        public static float NextFloat()
         {
             return (float)(float.MaxValue * 2.0 * (StaticRandom.NextDouble() - 0.5));
         }
 
-        public static float NextFloat(Random random, float min, float max)
+        public static float NextFloat(float min, float max)
         {
             double val = (StaticRandom.NextDouble() * (max - min) + min);
             return (float)val;

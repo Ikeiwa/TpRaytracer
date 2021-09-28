@@ -17,6 +17,7 @@ namespace SyntheseTP1
 
 		public const int maxBounces = 8;
 		public const int maxLightRays = 10;
+		public const int maxIndirectRays = 4;
 
 		public static Random rand;
 
@@ -62,7 +63,7 @@ namespace SyntheseTP1
 		public static HDRColor SendRay(Ray ray, int bounce = 0)
         {
 			if(bounce > maxBounces)
-				return new HDRColor(1, 0, 1);
+				return new HDRColor(0, 0, 0);
 
 			bool hasHit = GetClosestShape(ray, shapes, out Hit hit);
 
@@ -75,23 +76,45 @@ namespace SyntheseTP1
 					case MaterialType.Diffuse:
 						foreach (Light light in lights)
 						{
-					
-						
 							float lightEnergy = 0;
 							for (int i = 0; i < maxLightRays; i++)
 							{
 								lightEnergy += light.GetEnergyAtPoint(hit.position, hit.normal);
 							}
-							lightEnergy /= (float)maxLightRays;
+							lightEnergy /= maxLightRays;
 
 							if (lightEnergy > 0)
 							{
 								energy += hit.material.color * light.color * lightEnergy;
 							}
 						}
+
+
+
 						break;
 					case MaterialType.Mirror:
 						energy = SendRay(new Ray(hit.position, ray.direction.Reflect(hit.normal)), bounce + 1) * hit.material.color;
+						break;
+					case MaterialType.Glass:
+						//energy = SendRay(new Ray(hit.position+ray.direction*MathEx.RayOffset*4, ray.direction.Refract(hit.material.IOR,hit.normal)), bounce + 1) * hit.material.color;
+
+						float theta = Vector3.Dot(ray.direction, hit.normal);
+
+						Vector3 normal = hit.normal;
+						float IOR = hit.material.IOR;
+
+						if (theta > 0)
+                        {
+							normal = -hit.normal;
+							IOR = 1.0f / IOR;
+                        }
+
+						float R0 = ((1 - IOR) / (1 + IOR)) * ((1 - IOR) / (1 + IOR));
+						float RTheta = R0 + (1 - R0) * (float)Math.Pow(1 - (float)Math.Cos(theta), 5);
+
+						Vector3 refractDir = ray.direction.Refract(IOR, normal);
+
+						energy = SendRay(new Ray(hit.position + refractDir * MathEx.RayOffset*2, refractDir), bounce + 1);
 						break;
 					
 				}

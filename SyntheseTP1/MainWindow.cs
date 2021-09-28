@@ -44,9 +44,9 @@ namespace SyntheseTP1
 
 		HDRColor[,] buffer;
 
-		bool highRes = false;
+		bool highRes = true;
 
-		const int perPixelRays = 10;
+		const int samples = 1;
 
 		float rotX = 0;
 		float rotY = 0;
@@ -69,6 +69,8 @@ namespace SyntheseTP1
 			SetupScene();
 			//DrawRayTrace();
 			//img.Bitmap.Save("img.png", ImageFormat.Png);
+			if (highRes)
+				DrawRayTrace();
 			MainLoop();
 		}
 
@@ -77,41 +79,84 @@ namespace SyntheseTP1
         {
 			Scene.InitScene();
 
+			Scene.camera.type = Camera.CameraType.Perspective;
+			Scene.camera.position = new Vector3(0, 0, -2);
+			Scene.camera.fov = 39;
+
 			Material white = new Material { color = new HDRColor(1, 1, 1) };
-			Material green = new Material { color = new HDRColor(0.01f, 1, 0.01f) };
-			Material floor = new Material { color = new HDRColor(0.5f, 0.5f, 0.5f), type = MaterialType.Mirror };
+			Material black = new Material { color = new HDRColor(0, 0, 0) };
+			Material green = new Material { color = new HDRColor(0, 1, 0) };
+			Material red = new Material { color = new HDRColor(1, 0, 0) };
+			Material mirror = new Material { color = new HDRColor(1f, 1f, 1f), type = MaterialType.Mirror };
+			Material glass = new Material { color = new HDRColor(1f, 1f, 1f), type = MaterialType.Glass, IOR = 1.5f };
 
 			Scene.shapes.Add(new Sphere
 			{
-				position = new Vector3(0, 0, 4),
-				material = white
+				position = new Vector3(-0.2f, -0.2f, 0),
+				material = mirror,
+				radius = 0.15f
 			});
 
 			Scene.shapes.Add(new Sphere
 			{
-				position = new Vector3(0, 0, 4),
+				position = new Vector3(0.2f, -0.2f, 0),
+				material = glass,
+				radius = 0.15f
+			});
+
+			Scene.shapes.Add(new Sphere
+			{
+				position = new Vector3(0, 0.2f, 0),
 				material = white,
-				radius = 5
-			});
-
-			Scene.shapes.Add(new Sphere
-			{
-				radius = 0.5f,
-				position = new Vector3(0.75f, 0, 3.5f),
-				material = green
+				radius = 0.15f
 			});
 
 			Scene.shapes.Add(new Plane
 			{
-				position = new Vector3(0, -1.5f, 0),
+				position = new Vector3(0, -0.5f, 0),
 				rotation = Quaternion.CreateFromEulerAnglesDeg(0, 0, 0),
-				material = floor
+				material = white
+			});
+
+			Scene.shapes.Add(new Plane
+			{
+				position = new Vector3(0, 0.5f, 0),
+				rotation = Quaternion.CreateFromEulerAnglesDeg(0, 0, 180),
+				material = white
+			});
+
+			Scene.shapes.Add(new Plane
+			{
+				position = new Vector3(0, 0, 0.5f),
+				rotation = Quaternion.CreateFromEulerAnglesDeg(-90, 0, 0),
+				material = white
+			});
+
+			Scene.shapes.Add(new Plane
+			{
+				position = new Vector3(0, 0, -0.5f),
+				rotation = Quaternion.CreateFromEulerAnglesDeg(90, 0, 0),
+				material = black
+			});
+
+			Scene.shapes.Add(new Plane
+			{
+				position = new Vector3(-0.5f, 0, 0),
+				rotation = Quaternion.CreateFromEulerAnglesDeg(0, 0, -90),
+				material = red
+			});
+
+			Scene.shapes.Add(new Plane
+			{
+				position = new Vector3(0.5f, 0, 0),
+				rotation = Quaternion.CreateFromEulerAnglesDeg(0, 0, 90),
+				material = green
 			});
 
 			Scene.lights.Add(new PointLight
 			{
-				position = new Vector3(2, -0.5f, 3),
-				intensity = 1,
+				position = new Vector3(0, 0, 0),
+				intensity = 0.05f,
 				radius = 0.1f
 			});
 		}
@@ -247,7 +292,7 @@ namespace SyntheseTP1
 
         public void UpdateLoop()
         {
-			Scene.camera.rotation = Quaternion.CreateFromYawPitchRoll(rotY * (float)MathEx.DegToRad, rotX * (float)MathEx.DegToRad, 0);
+			//Scene.camera.rotation = Quaternion.CreateFromYawPitchRoll(rotY * (float)MathEx.DegToRad, rotX * (float)MathEx.DegToRad, 0);
 
 			if (!highRes)
 				DrawRayTrace();
@@ -260,7 +305,7 @@ namespace SyntheseTP1
             switch (mode)
             {
 				case 0:
-					graphics.DrawImage(img.Bitmap, 0, ClientSize.Height, ClientSize.Width,-ClientSize.Height);
+					graphics.DrawImage(img.Bitmap, 0, 0, ClientSize.Width,ClientSize.Height);
 					break;
 				case 1:
 					foreach(GameObject gameObject in gameObjects)
@@ -276,14 +321,18 @@ namespace SyntheseTP1
             //Send pixels rays
             if (highRes)
             {
+				float offset = 0.5f;
+				if (samples == 1)
+					offset = 0;
+
 				Parallel.For(0, img.Width,
 				x => {
 					for (int y = 0; y < img.Height; y++)
 					{
 						List<HDRColor> results = new List<HDRColor>();
-						for(int i = 0; i < perPixelRays; i++)
+						for(int i = 0; i < samples; i++)
                         {
-							Vector2 pixelOffset = new Vector2(MathEx.NextFloat(Scene.rand ,-0.5f, 0.5f), MathEx.NextFloat(Scene.rand ,-0.5f, 0.5f));
+							Vector2 pixelOffset = new Vector2(MathEx.NextFloat(-offset, offset), MathEx.NextFloat(-offset, offset));
 							Ray camRay = Scene.camera.PixelToRay(new Vector2(x, y) + pixelOffset, img.Res);
 							results.Add(Scene.SendRay(camRay));
                         }
