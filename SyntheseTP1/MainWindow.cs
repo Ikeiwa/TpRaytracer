@@ -79,7 +79,7 @@ namespace SyntheseTP1
 
 			Material white = new Material { color = new HDRColor(1, 1, 1) };
 			Material green = new Material { color = new HDRColor(0.01f, 1, 0.01f) };
-			Material floor = new Material { color = new HDRColor(1, 0, 0), type = MaterialType.Mirror };
+			Material floor = new Material { color = new HDRColor(0.5f, 0.5f, 0.5f), type = MaterialType.Mirror };
 
 			Scene.shapes.Add(new Sphere
 			{
@@ -103,14 +103,14 @@ namespace SyntheseTP1
 
 			Scene.shapes.Add(new Plane
 			{
-				position = new Vector3(0, 1.5f, 0),
+				position = new Vector3(0, -1.5f, 0),
 				rotation = Quaternion.CreateFromEulerAnglesDeg(0, 0, 0),
 				material = floor
 			});
 
 			Scene.lights.Add(new PointLight
 			{
-				position = new Vector3(2, 0.5f, 3),
+				position = new Vector3(2, -0.5f, 3),
 				intensity = 1,
 				radius = 0.1f
 			});
@@ -198,11 +198,11 @@ namespace SyntheseTP1
 							break;
 						case Keys.A:
 							if (Scene.camera != null)
-								Scene.camera.Translate(0, Time.deltaTime * 2, 0);
+								Scene.camera.Translate(0, -Time.deltaTime * 2, 0);
 							break;
 						case Keys.E:
 							if (Scene.camera != null)
-								Scene.camera.Translate(0, -Time.deltaTime * 2, 0);
+								Scene.camera.Translate(0, Time.deltaTime * 2, 0);
 							break;
 
 
@@ -238,7 +238,7 @@ namespace SyntheseTP1
 				mouse = new Vector2(Cursor.Position.X, Cursor.Position.Y);
 
 				rotY += (mouse.X - windowCenter.X) / 20;
-				rotX -= (mouse.Y - windowCenter.Y) / 20;
+				rotX += (mouse.Y - windowCenter.Y) / 20;
 
 				Cursor.Position = windowCenter;
             }
@@ -260,7 +260,7 @@ namespace SyntheseTP1
             switch (mode)
             {
 				case 0:
-					graphics.DrawImage(img.Bitmap, 0,0,ClientSize.Width,ClientSize.Height);
+					graphics.DrawImage(img.Bitmap, 0, ClientSize.Height, ClientSize.Width,-ClientSize.Height);
 					break;
 				case 1:
 					foreach(GameObject gameObject in gameObjects)
@@ -280,11 +280,11 @@ namespace SyntheseTP1
 				x => {
 					for (int y = 0; y < img.Height; y++)
 					{
-						Ray camRay = Scene.camera.PixelToRay(new Vector2(x, y), img.Res);
-
 						List<HDRColor> results = new List<HDRColor>();
 						for(int i = 0; i < perPixelRays; i++)
                         {
+							Vector2 pixelOffset = new Vector2(MathEx.NextFloat(Scene.rand ,-0.5f, 0.5f), MathEx.NextFloat(Scene.rand ,-0.5f, 0.5f));
+							Ray camRay = Scene.camera.PixelToRay(new Vector2(x, y) + pixelOffset, img.Res);
 							results.Add(Scene.SendRay(camRay));
                         }
 						HDRColor result = HDRColor.GetAverage(results);

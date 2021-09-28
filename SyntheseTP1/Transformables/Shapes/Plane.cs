@@ -14,7 +14,7 @@ namespace SyntheseTP1.Shapes
 
         public override float? Intersect(Ray ray)
         {
-            Vector3 normal = Vector3.UnitY.Transform(rotation).Normalize();
+            Vector3 normal = -Vector3.UnitY.Transform(rotation).Normalize();
 
             float denom = Vector3.Dot(normal, ray.direction);
 
@@ -39,7 +39,7 @@ namespace SyntheseTP1.Shapes
                 hit.material = material;
                 hit.distance = dist.Value;
                 hit.position = ray.GetEnd(dist.Value - MathEx.RayOffset);
-                hit.normal = -Vector3.UnitY.Transform(rotation).Normalize();
+                hit.normal = Vector3.UnitY.Transform(rotation).Normalize();
                 return hit;
             }
             return null;
