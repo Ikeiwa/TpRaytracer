@@ -21,8 +21,14 @@ namespace SyntheseTP1
             this.B = B;
         }
 
+        public override string ToString()
+        {
+            return "R:" + R + " G:" + G + " B:" + B;
+        }
+
         public Color ToColor()
         {
+
             return Color.FromArgb(255,
                                   (int)MathOps.Clamp(Math.Pow(R, 1 / 2.2) * 255, 0, 255),
                                   (int)MathOps.Clamp(Math.Pow(G, 1 / 2.2) * 255, 0, 255),

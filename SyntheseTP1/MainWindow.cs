@@ -292,7 +292,7 @@ namespace SyntheseTP1
 
         public void UpdateLoop()
         {
-			//Scene.camera.rotation = Quaternion.CreateFromYawPitchRoll(rotY * (float)MathEx.DegToRad, rotX * (float)MathEx.DegToRad, 0);
+			Scene.camera.rotation = Quaternion.CreateFromYawPitchRoll(rotY * (float)MathEx.DegToRad, rotX * (float)MathEx.DegToRad, 0);
 
 			if (!highRes)
 				DrawRayTrace();

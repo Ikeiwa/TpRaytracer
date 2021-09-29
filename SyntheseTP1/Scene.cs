@@ -109,16 +109,23 @@ namespace SyntheseTP1
 							IOR = 1.0f / IOR;
                         }
 
+						theta = Math.Abs(theta);
 						float R0 = ((1 - IOR) * (1 - IOR)) / 
 								   ((1 + IOR) * (1 + IOR));
-						float RTheta = R0 + (1 - R0) * (float)Math.Pow(1 - (float)Math.Cos(theta), 5);
+						float RTheta = R0 + (1 - R0) * (float)Math.Pow(1 - theta, 5);
+						RTheta = MathOps.Clamp(RTheta, 0, 1);
+
+						HDRColor reflectEnergy = SendRay(new Ray(hit.position, ray.direction.Reflect(hit.normal)), bounce + 1);
+						HDRColor refractEnergy = reflectEnergy;
 
 						Vector3 refractDir = ray.direction.Refract(IOR, normal);
+						if(refractDir != Vector3.Zero)
+							refractEnergy = SendRay(new Ray(hit.position + refractDir * MathEx.RayOffset * 2, refractDir), bounce + 1);
 
-						HDRColor refractEnergy = SendRay(new Ray(hit.position + refractDir * MathEx.RayOffset * 2, refractDir), bounce + 1);
-						HDRColor reflectEnergy = SendRay(new Ray(hit.position, ray.direction.Reflect(hit.normal)), bounce + 1);
 
-						energy = HDRColor.Lerp(reflectEnergy, refractEnergy, RTheta) * hit.material.color;
+						
+
+						energy = HDRColor.Lerp(refractEnergy, reflectEnergy, RTheta) * hit.material.color;
 						break;
 					
 				}

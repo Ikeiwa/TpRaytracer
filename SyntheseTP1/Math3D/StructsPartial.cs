@@ -83,12 +83,12 @@ namespace Vim.Math3d
 
         public Vector3 Refract(float IOR, Vector3 normal)
         {
-            float N_dot_I = Dot(normal, this);
-            float k = 1.0f - IOR * IOR * (1.0f - N_dot_I * N_dot_I);
-            if (k < 0.0f)
-                return Reflect(normal);
-            else
-                return IOR * this - (IOR * N_dot_I + (float)Math.Sqrt(k)) * normal;
+            float n = 1 / IOR;
+            float cosI = -Dot(normal, this);
+            float sinT2 = n * n * (1.0f - cosI * cosI);
+            if (sinT2 > 1.0) return Zero;
+            float cosT = (float)Math.Sqrt(1.0f - sinT2);
+            return n * this + (n * cosI - cosT) * normal;
         }
 
         /// <summary>

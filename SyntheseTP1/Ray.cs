@@ -8,11 +8,11 @@ using SyntheseTP1.Shapes;
 
 namespace SyntheseTP1
 {
-    class Ray
+    struct Ray
     {
-        public Vector3 position;
-        public Vector3 direction;
-        public float length = 1;
+        public readonly Vector3 position;
+        public readonly Vector3 direction;
+        public readonly float length;
 
         public Ray(Vector3 position, Vector3 direction)
         {
