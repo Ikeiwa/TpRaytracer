@@ -67,10 +67,11 @@ namespace SyntheseTP1
 
 			SetupBuffers();
 			SetupScene();
-			//DrawRayTrace();
-			//img.Bitmap.Save("img.png", ImageFormat.Png);
 			if (highRes)
+            {
 				DrawRayTrace();
+				img.Bitmap.Save("img.png", ImageFormat.Png);
+			}
 			MainLoop();
 		}
 

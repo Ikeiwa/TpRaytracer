@@ -20,10 +20,13 @@ namespace SyntheseTP1.Shapes
 
         public float? Intersect(Ray ray, out Vector3 normal)
         {
-            Vector3 ro = ray.position.Transform(GetTransformMatrix().Inverse());
-            Vector3 rd = ray.direction.Transform(rotation.Inverse());
+            /*Vector3 ro = ray.position.Transform(GetTransformMatrix().Inverse());
+            Vector3 rd = ray.direction.Transform(rotation.Inverse());*/
 
-            Vector3 m = 1.0f / rd; // can precompute if traversing a set of aligned boxes
+            Vector3 ro = ray.position - position;
+            Vector3 rd = ray.direction;
+
+            Vector3 m = Vector3.OneOn(rd); // can precompute if traversing a set of aligned boxes
             Vector3 n = m * ro;   // can precompute if traversing a set of aligned boxes
             Vector3 k = Vector3.Abs(m) * scale;
 
@@ -39,7 +42,7 @@ namespace SyntheseTP1.Shapes
             if (tN > 0)
                 return tN;
 
-            return null;
+            return tF;
         }
 
         public override Hit Trace(Ray ray)

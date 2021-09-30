@@ -16,7 +16,7 @@ namespace SyntheseTP1
         public static List<Light> lights { get; private set; }
 
 		public const int maxBounces = 8;
-		public const int maxLightRays = 10;
+		public const int maxLightRays = 200;
 		public const int maxIndirectRays = 4;
 
 		public static Random rand;
@@ -93,7 +93,8 @@ namespace SyntheseTP1
 
 						break;
 					case MaterialType.Mirror:
-						energy = SendRay(new Ray(hit.position, ray.direction.Reflect(hit.normal)), bounce + 1) * hit.material.color;
+						Vector3 reflectVec = ray.direction.Reflect(hit.normal);
+						energy = SendRay(new Ray(hit.truePosition + reflectVec * MathEx.RayOffset, reflectVec), bounce + 1) * hit.material.color;
 						break;
 					case MaterialType.Glass:
 						float theta = Vector3.Dot(ray.direction, hit.normal);
