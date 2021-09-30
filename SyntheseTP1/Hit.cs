@@ -11,6 +11,7 @@ namespace SyntheseTP1
     class Hit
     {
         public Vector3 position;
+        public Vector3 truePosition;
         public Vector3 normal;
         public float distance;
         public Material material;

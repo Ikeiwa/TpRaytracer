@@ -46,7 +46,7 @@ namespace SyntheseTP1
 
 		bool highRes = true;
 
-		const int samples = 1;
+		const int samples = 10;
 
 		float rotX = 0;
 		float rotY = 0;

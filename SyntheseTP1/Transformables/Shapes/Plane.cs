@@ -38,6 +38,7 @@ namespace SyntheseTP1.Shapes
                 Hit hit = new Hit();
                 hit.material = material;
                 hit.distance = dist.Value;
+                hit.truePosition = ray.GetEnd(dist.Value);
                 hit.position = ray.GetEnd(dist.Value - MathEx.RayOffset);
                 hit.normal = Vector3.UnitY.Transform(rotation).Normalize();
                 return hit;

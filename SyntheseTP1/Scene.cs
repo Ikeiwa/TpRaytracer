@@ -96,8 +96,6 @@ namespace SyntheseTP1
 						energy = SendRay(new Ray(hit.position, ray.direction.Reflect(hit.normal)), bounce + 1) * hit.material.color;
 						break;
 					case MaterialType.Glass:
-						//energy = SendRay(new Ray(hit.position+ray.direction*MathEx.RayOffset*4, ray.direction.Refract(hit.material.IOR,hit.normal)), bounce + 1) * hit.material.color;
-
 						float theta = Vector3.Dot(ray.direction, hit.normal);
 
 						Vector3 normal = hit.normal;
@@ -115,15 +113,15 @@ namespace SyntheseTP1
 						float RTheta = R0 + (1 - R0) * (float)Math.Pow(1 - theta, 5);
 						RTheta = MathOps.Clamp(RTheta, 0, 1);
 
-						HDRColor reflectEnergy = SendRay(new Ray(hit.position, ray.direction.Reflect(hit.normal)), bounce + 1);
+						Vector3 refractDir = ray.direction.Refract(IOR, normal);
+						Vector3 reflectDir = ray.direction.Reflect(hit.normal);
+
+						HDRColor reflectEnergy = SendRay(new Ray(hit.truePosition + reflectDir * MathEx.RayOffset, reflectDir), bounce + 1);
 						HDRColor refractEnergy = reflectEnergy;
 
-						Vector3 refractDir = ray.direction.Refract(IOR, normal);
-						if(refractDir != Vector3.Zero)
-							refractEnergy = SendRay(new Ray(hit.position + refractDir * MathEx.RayOffset * 2, refractDir), bounce + 1);
-
-
 						
+						if(refractDir != Vector3.Zero)
+							refractEnergy = SendRay(new Ray(hit.truePosition + refractDir * MathEx.RayOffset, refractDir), bounce + 1);
 
 						energy = HDRColor.Lerp(refractEnergy, reflectEnergy, RTheta) * hit.material.color;
 						break;
