@@ -11,12 +11,12 @@ namespace SyntheseTP1
 {
     static class Scene
     {
-        public static Camera camera { get; private set; }
-        public static List<Shape> shapes { get; private set; }
-        public static List<Light> lights { get; private set; }
+		public static Camera camera;
+		public static List<Shape> shapes;
+		public static List<Light> lights;
 
 		public const int maxBounces = 8;
-		public const int maxLightRays = 200;
+		public const int maxLightRays = 10;
 		public const int maxIndirectRays = 4;
 
 		public static Random rand;
@@ -114,17 +114,27 @@ namespace SyntheseTP1
 						float RTheta = R0 + (1 - R0) * (float)Math.Pow(1 - theta, 5);
 						RTheta = MathOps.Clamp(RTheta, 0, 1);
 
-						Vector3 refractDir = ray.direction.Refract(IOR, normal);
-						Vector3 reflectDir = ray.direction.Reflect(hit.normal);
+						bool randType = StaticRandom.NextDouble() > RTheta;
 
-						HDRColor reflectEnergy = SendRay(new Ray(hit.truePosition + reflectDir * MathEx.RayOffset, reflectDir), bounce + 1);
-						HDRColor refractEnergy = reflectEnergy;
+                        if (randType)
+                        {
+							Vector3 refractDir = ray.direction.Refract(IOR, normal);
+							if(refractDir == Vector3.Zero)
+								refractDir = ray.direction.Reflect(hit.normal);
 
-						
-						if(refractDir != Vector3.Zero)
-							refractEnergy = SendRay(new Ray(hit.truePosition + refractDir * MathEx.RayOffset, refractDir), bounce + 1);
+							HDRColor refractEnergy = SendRay(new Ray(hit.truePosition + refractDir * MathEx.RayOffset, refractDir), bounce + 1);
+							energy = refractEnergy * hit.material.color;
+						}
+                        else
+                        {
+							Vector3 reflectDir = ray.direction.Reflect(hit.normal);
+							HDRColor reflectEnergy = SendRay(new Ray(hit.truePosition + reflectDir * MathEx.RayOffset, reflectDir), bounce + 1);
+							energy = reflectEnergy * hit.material.color;
 
-						energy = HDRColor.Lerp(refractEnergy, reflectEnergy, RTheta) * hit.material.color;
+							//energy = reflectEnergy * hit.material.color * (1 / RTheta) * RTheta;
+							//RTheta s'annule
+						}
+
 						break;
 					
 				}

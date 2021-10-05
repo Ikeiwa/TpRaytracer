@@ -46,7 +46,7 @@ namespace SyntheseTP1
 
 		bool highRes = true;
 
-		const int samples = 10;
+		const int samples = 1;
 
 		float rotX = 0;
 		float rotY = 0;
@@ -91,7 +91,7 @@ namespace SyntheseTP1
 			Material mirror = new Material { color = new HDRColor(1f, 1f, 1f), type = MaterialType.Mirror };
 			Material glass = new Material { color = new HDRColor(1f, 1f, 1f), type = MaterialType.Glass, IOR = 1.5f };
 
-			Scene.shapes.Add(new Sphere
+			/*Scene.shapes.Add(new Sphere
 			{
 				position = new Vector3(-0.2f, -0.2f, 0),
 				material = mirror,
@@ -110,7 +110,9 @@ namespace SyntheseTP1
 				position = new Vector3(0, 0.2f, 0),
 				material = white,
 				radius = 0.15f
-			});
+			});*/
+
+			ObjLoader.LoadObj("monkey.obj", ref Scene.shapes);
 
 			Scene.shapes.Add(new Plane
 			{
@@ -156,7 +158,7 @@ namespace SyntheseTP1
 
 			Scene.lights.Add(new PointLight
 			{
-				position = new Vector3(0, 0, 0),
+				position = new Vector3(0, 0, -1.5f),
 				intensity = 0.05f,
 				radius = 0.1f
 			});
@@ -366,6 +368,8 @@ namespace SyntheseTP1
 			});
 
 			Invalidate();
+
+
 		}
 
 		public bool PreFilterMessage(ref Message m)
