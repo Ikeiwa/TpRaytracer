@@ -13,7 +13,7 @@ namespace SyntheseTP1
 {
     class ObjLoader
     {
-        public static void LoadObj(string fileName, ref List<Shape> shapes)
+        public static void LoadObj(string fileName, ref Material mat, ref List<Shape> shapes)
         {
             string path = Path.Combine(Directory.GetCurrentDirectory(), fileName);
             if (File.Exists(path))
@@ -33,31 +33,21 @@ namespace SyntheseTP1
                         float Z = float.Parse(verticeData[2], CultureInfo.InvariantCulture);
 
                         vertices.Add(new Vector3(X,Y,Z));
-                        Console.WriteLine("added " + vertices.Last().ToString());
                     }
                     else if (objData[i].StartsWith("f "))
                     {
                         string[] verticeData = objData[i].Substring(2).Split(' ');
-                        int A = int.Parse(verticeData[0].Split('/')[0]);
-                        int B = int.Parse(verticeData[1].Split('/')[0]);
-                        int C = int.Parse(verticeData[2].Split('/')[0]);
+                        int A = int.Parse(verticeData[0].Split('/')[0])-1;
+                        int B = int.Parse(verticeData[1].Split('/')[0])-1;
+                        int C = int.Parse(verticeData[2].Split('/')[0])-1;
 
-                        Console.WriteLine(A + " " + B + " " + C);
-
-                        Triangle tri = new Triangle
+                        shapes.Add(new Triangle
                         {
                             A = vertices[A],
                             B = vertices[B],
-                            C = vertices[C]
-                        };
-
-                        /*shapes.Add(new Triangle
-                        {
-                            A = vertices[A],
-                            B = vertices[B],
-                            C = vertices[C]
-                        });*/
-                        Console.WriteLine("Adding triangle " + A + " " + B + " " + C);
+                            C = vertices[C],
+                            material = mat
+                        });
                     }
                 }
             }

@@ -112,7 +112,7 @@ namespace SyntheseTP1
 				radius = 0.15f
 			});*/
 
-			ObjLoader.LoadObj("monkey.obj", ref Scene.shapes);
+			ObjLoader.LoadObj("monkey.obj",ref white, ref Scene.shapes);
 
 			Scene.shapes.Add(new Plane
 			{
@@ -158,7 +158,7 @@ namespace SyntheseTP1
 
 			Scene.lights.Add(new PointLight
 			{
-				position = new Vector3(0, 0, -1.5f),
+				position = new Vector3(-0.4f, 0.4f, -0.4f),
 				intensity = 0.05f,
 				radius = 0.1f
 			});
