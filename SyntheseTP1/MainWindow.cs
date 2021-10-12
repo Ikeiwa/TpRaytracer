@@ -112,7 +112,7 @@ namespace SyntheseTP1
 				radius = 0.15f
 			});*/
 
-			ObjLoader.LoadObj("monkey.obj",ref white, ref Scene.shapes);
+			Scene.shapes.Add(new ObjObject("monkey.obj") {material = white});
 
 			Scene.shapes.Add(new Plane
 			{

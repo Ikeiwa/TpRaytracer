@@ -49,7 +49,6 @@
   <ItemGroup>
     <Compile Include="Hit.cs" />
     <Compile Include="MathEx.cs" />
-    <Compile Include="ObjLoader.cs" />
     <Compile Include="Scene.cs" />
     <Compile Include="Transformables\Camera.cs" />
     <Compile Include="Component.cs" />
@@ -58,6 +57,7 @@
     <Compile Include="Transformables\Lights\Light.cs" />
     <Compile Include="Transformables\Lights\DirectionalLight.cs" />
     <Compile Include="Transformables\Lights\PointLight.cs" />
+    <Compile Include="Transformables\Shapes\ObjObject.cs" />
     <Compile Include="Transformables\Shapes\Triangle.cs" />
     <Compile Include="Transformables\Shapes\Shape.cs" />
     <Compile Include="Transformables\Shapes\Plane.cs" />
