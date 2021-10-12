@@ -13,6 +13,14 @@ namespace SyntheseTP1.Shapes
         public Vector3 B;
         public Vector3 C;
 
+        public Vector3 nA;
+        public Vector3 nB;
+        public Vector3 nC;
+
+        public Vector2 uA;
+        public Vector2 uB;
+        public Vector2 uC;
+
         public Vector3 center { get; private set; }
 
         public Triangle(Vector3 A,Vector3 B,Vector3 C)
