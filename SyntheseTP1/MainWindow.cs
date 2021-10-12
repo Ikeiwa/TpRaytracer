@@ -17,6 +17,7 @@ using Sphere = SyntheseTP1.Shapes.Sphere;
 using SyntheseTP1.Transformables.Lights;
 using Plane = SyntheseTP1.Shapes.Plane;
 using System.Diagnostics;
+using Triangle = SyntheseTP1.Shapes.Triangle;
 
 namespace SyntheseTP1
 {
@@ -112,7 +113,11 @@ namespace SyntheseTP1
 				radius = 0.15f
 			});*/
 
-			Scene.shapes.Add(new ObjObject("monkey.obj") {material = white});
+			Scene.shapes.Add(new ObjObject("monkey.obj")
+            {
+                material = white,
+				position = new Vector3(0,0,0)
+            });
 
 			Scene.shapes.Add(new Plane
 			{

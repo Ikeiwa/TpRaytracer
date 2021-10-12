@@ -12,14 +12,18 @@ namespace SyntheseTP1.Shapes
     class ObjObject : Shape
     {
         public string filename;
-        private List<Shape> triangles;
+        private List<Triangle> triangles;
+        private BoundingBoxTree boundingBoxTree;
 
-        public List<Shape> LoadObj(string fileName)
+        public List<Triangle> LoadObj(string fileName)
         {
-            List<Shape> shapes = new List<Shape>();
+            List<Triangle> shapes = new List<Triangle>();
             string path = Path.Combine(Directory.GetCurrentDirectory(), fileName);
             if (File.Exists(path))
             {
+                Vector3 min = Vector3.MaxValue;
+                Vector3 max = Vector3.MinValue;
+
                 string[] objData = File.ReadAllText(path).Split(new[] { "\r\n", "\r", "\n" }, StringSplitOptions.RemoveEmptyEntries);
 
                 List<Vector3> vertices = new List<Vector3>();
@@ -33,7 +37,12 @@ namespace SyntheseTP1.Shapes
                         float Y = float.Parse(verticeData[1], CultureInfo.InvariantCulture);
                         float Z = float.Parse(verticeData[2], CultureInfo.InvariantCulture);
 
-                        vertices.Add(new Vector3(X,Y,Z));
+                        Vector3 vert = new Vector3(X, Y, Z);
+
+                        min = min.Min(vert);
+                        max = max.Max(vert);
+
+                        vertices.Add(vert);
                     }
                     else if (objData[i].StartsWith("f "))
                     {
@@ -42,11 +51,8 @@ namespace SyntheseTP1.Shapes
                         int B = int.Parse(verticeData[1].Split('/')[0])-1;
                         int C = int.Parse(verticeData[2].Split('/')[0])-1;
 
-                        shapes.Add(new Triangle
+                        shapes.Add(new Triangle(vertices[A],vertices[B],vertices[C])
                         {
-                            A = vertices[A],
-                            B = vertices[B],
-                            C = vertices[C],
                             material = material
                         });
                     }
@@ -60,6 +66,7 @@ namespace SyntheseTP1.Shapes
         {
             this.filename = filename;
             triangles = LoadObj(filename);
+            boundingBoxTree = new BoundingBoxTree(triangles);
         }
 
         public override float? Intersect(Ray ray)
@@ -69,37 +76,46 @@ namespace SyntheseTP1.Shapes
 
         public float? Intersect(Ray ray, out Vector3 normal)
         {
-            List<Hit> hits = new List<Hit>();
-
-            foreach (Shape tri in triangles)
+            Ray offsetRay = new Ray(ray.position-position,ray.direction);
+            List<Triangle> tris = null;
+            float? boundHit = boundingBoxTree.Intersect(offsetRay, out tris);
+            if (boundHit.HasValue && tris != null)
             {
-                Hit tmpHit = tri.Trace(ray);
-                if (tmpHit != null)
-                {
-                    hits.Add(tmpHit);
-                }
-            }
+                List<Hit> hits = new List<Hit>();
 
-            if (hits.Count > 0)
-            {
-                Hit hit = hits[0];
-                if (hits.Count > 1)
+                foreach (Shape tri in tris)
                 {
-                    
-                    float? minDist = float.MaxValue;
-
-                    foreach (Hit tmpHit in hits)
+                    Hit tmpHit = tri.Trace(offsetRay);
+                    if (tmpHit != null)
                     {
-                        if (tmpHit.distance < minDist.Value)
-                        {
-                            minDist = tmpHit.distance;
-                            hit = tmpHit;
-                        }
+                        hits.Add(tmpHit);
                     }
                 }
 
-                normal = hit.normal;
-                return hit.distance;
+                if (hits.Count > 0)
+                {
+                    Hit hit = hits[0];
+                    if (hits.Count > 1)
+                    {
+                    
+                        float? minDist = float.MaxValue;
+
+                        foreach (Hit tmpHit in hits)
+                        {
+                            if (tmpHit.distance < minDist.Value)
+                            {
+                                minDist = tmpHit.distance;
+                                hit = tmpHit;
+                            }
+                        }
+                    }
+
+                    normal = hit.normal;
+                    return hit.distance;
+                }
+
+                /*normal = Vector3.UnitZ;
+                return boundHit.Value;*/
             }
 
             normal = Vector3.UnitZ;
