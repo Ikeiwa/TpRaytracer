@@ -61,6 +61,22 @@ namespace SyntheseTP1.Shapes
             return null;
         }
 
+        private Vector3 CalculateBarycenter(Vector3 pos)
+        {
+            Vector3 U = B - A;
+            Vector3 V = C - A;
+            Vector3 W = pos - A;
+
+            float vCrossW = V.Cross(W).Length();
+            float uCrossW = U.Cross(W).Length();
+            float uCrossV = U.Cross(V).Length();
+
+            float b1 = vCrossW / uCrossV;
+            float b2 = uCrossW / uCrossV;
+            float b0 = (1 - b1) - b2;
+
+            return new Vector3(b0, b1, b2);
+        }
 
 
         public override Hit Trace(Ray ray)
@@ -69,10 +85,14 @@ namespace SyntheseTP1.Shapes
 
             if (dist.HasValue)
             {
+                Vector3 pos = ray.GetEnd(dist.Value);
+                Vector3 barycenter = CalculateBarycenter(pos);
+                
+
                 Hit hit = new Hit();
                 hit.material = material;
                 hit.distance = dist.Value;
-                hit.truePosition = ray.GetEnd(dist.Value);
+                hit.truePosition = pos;
                 hit.position = ray.GetEnd(dist.Value - MathEx.RayOffset);
                 hit.normal = (B - A).Cross(C - A).Normalize();
                 return hit;
