@@ -47,7 +47,10 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="BoundingBoxTree.cs" />
+    <Compile Include="Bounds\BoundTreeLeafMesh.cs" />
+    <Compile Include="Bounds\BoundTreeNode.cs" />
+    <Compile Include="Bounds\BoundingBox.cs" />
+    <Compile Include="Bounds\BoundTreeNodeBase.cs" />
     <Compile Include="Hit.cs" />
     <Compile Include="MathEx.cs" />
     <Compile Include="Scene.cs" />

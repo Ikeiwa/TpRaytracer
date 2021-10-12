@@ -9,25 +9,32 @@ using Triangle = SyntheseTP1.Shapes.Triangle;
 
 namespace SyntheseTP1
 {
-    class BoundingBoxTree
+    class BoundingBox
     {
         public Vector3 min;
         public Vector3 max;
 
-        public BoundingBoxTree minBounds;
-        public BoundingBoxTree maxBounds;
+        public BoundingBox(){}
 
-        public List<Triangle> triangles;
-
-        public const int minTriangles = 6;
-
-        public BoundingBoxTree(Vector3 min, Vector3 max)
+        public BoundingBox(Vector3 min, Vector3 max)
         {
             this.min = min;
             this.max = max;
         }
 
-        public BoundingBoxTree(List<Triangle> tris)
+        public BoundingBox(List<Vector3> points)
+        {
+            min = Vector3.MaxValue;
+            max = Vector3.MinValue;
+
+            foreach (Vector3 point in points)
+            {
+                min = min.Min(point);
+                max = max.Max(point);
+            }
+        }
+
+        public BoundingBox(List<Triangle> tris)
         {
             min = Vector3.MaxValue;
             max = Vector3.MinValue;
@@ -42,57 +49,9 @@ namespace SyntheseTP1
                 max = max.Max(tri.B);
                 max = max.Max(tri.C);
             }
-
-            if (tris.Count <= minTriangles)
-            {
-                triangles = tris;
-                return;
-            }
-
-            Vector3 size = max - min;
-            int largestAxis = size.X > size.Y ? (size.X > size.Z ? 0 : 2) : (size.Y > size.Z ? 1 : 2);
-
-            List<Triangle> sortedTris = tris.OrderBy(t => t.center.GetComponent(largestAxis)).ToList();
-
-            int halfTris = sortedTris.Count / 2;
-
-            minBounds = new BoundingBoxTree(sortedTris.GetRange(0, halfTris));
-            maxBounds = new BoundingBoxTree(sortedTris.GetRange(halfTris, sortedTris.Count-halfTris));
         }
 
-        public float? Intersect(Ray ray, out List<Triangle> triangles)
-        {
-            float? hit = IntersectSelf(ray);
-            triangles = this.triangles;
-
-            if (!hit.HasValue) return null;
-
-            if (minBounds == null)
-                return hit;
-
-            List<Triangle> minTris = null;
-            float? hitMin = minBounds.Intersect(ray, out minTris);
-            List<Triangle> maxTris = null;
-            float? hitMax = maxBounds.Intersect(ray, out maxTris);
-
-            if (hitMin.HasValue && hitMax.HasValue)
-            {
-                triangles = minTris.Concat(maxTris).ToList();
-                return Math.Min(hitMin.Value,hitMax.Value);
-            }
-
-            if (hitMin.HasValue)
-            {
-                triangles = minTris;
-                return hitMin;
-            }
-
-            triangles = maxTris;
-            return hitMax;
-
-        }
-
-        private float? IntersectSelf(Ray ray)
+        public virtual float? Intersect(Ray ray)
         {
             const float Epsilon = 1e-6f;
 
@@ -173,6 +132,14 @@ namespace SyntheseTP1
             if (tMin < 0) return null;
 
             return tMin;
+        }
+
+        public static BoundingBox operator +(BoundingBox a,BoundingBox b)
+        {
+            a.min = a.min.Min(b.min);
+            a.max = a.max.Max(b.max);
+
+            return a;
         }
     }
 }

@@ -101,5 +101,9 @@ namespace SyntheseTP1
         public float roughness = 1;
         public MaterialType type = MaterialType.Diffuse;
         public float IOR = 1;
+
+        public Material(){}
+
+        public static Material white = new Material() {color = new HDRColor(1, 1, 1)};
     }
 }

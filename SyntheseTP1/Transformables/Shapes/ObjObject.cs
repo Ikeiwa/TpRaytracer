@@ -12,10 +12,11 @@ namespace SyntheseTP1.Shapes
     class ObjObject : Shape
     {
         public string filename;
+        public BoundingBox bounds { get; private set; }
         private List<Triangle> triangles;
-        private BoundingBoxTree boundingBoxTree;
+        private BoundTreeNode boundingBoxTree;
 
-        public List<Triangle> LoadObj(string fileName)
+        private List<Triangle> LoadObj(string fileName)
         {
             List<Triangle> shapes = new List<Triangle>();
             string path = Path.Combine(Directory.GetCurrentDirectory(), fileName);
@@ -57,86 +58,38 @@ namespace SyntheseTP1.Shapes
                         });
                     }
                 }
+
+                bounds = new BoundingBox(min, max);
             }
 
             return shapes;
         }
 
-        public ObjObject(string filename)
+        public ObjObject(string filename, Material material = null)
         {
+            if (material == null)
+                this.material = Material.white;
+            else
+                this.material = material;
             this.filename = filename;
             triangles = LoadObj(filename);
-            boundingBoxTree = new BoundingBoxTree(triangles);
+            boundingBoxTree = new BoundTreeNode(triangles, bounds);
         }
 
         public override float? Intersect(Ray ray)
         {
-            return Intersect(ray,out Vector3 normal);
-        }
-
-        public float? Intersect(Ray ray, out Vector3 normal)
-        {
             Ray offsetRay = new Ray(ray.position-position,ray.direction);
-            List<Triangle> tris = null;
-            float? boundHit = boundingBoxTree.Intersect(offsetRay, out tris);
-            if (boundHit.HasValue && tris != null)
-            {
-                List<Hit> hits = new List<Hit>();
-
-                foreach (Shape tri in tris)
-                {
-                    Hit tmpHit = tri.Trace(offsetRay);
-                    if (tmpHit != null)
-                    {
-                        hits.Add(tmpHit);
-                    }
-                }
-
-                if (hits.Count > 0)
-                {
-                    Hit hit = hits[0];
-                    if (hits.Count > 1)
-                    {
-                    
-                        float? minDist = float.MaxValue;
-
-                        foreach (Hit tmpHit in hits)
-                        {
-                            if (tmpHit.distance < minDist.Value)
-                            {
-                                minDist = tmpHit.distance;
-                                hit = tmpHit;
-                            }
-                        }
-                    }
-
-                    normal = hit.normal;
-                    return hit.distance;
-                }
-
-                /*normal = Vector3.UnitZ;
-                return boundHit.Value;*/
-            }
-
-            normal = Vector3.UnitZ;
+            
+            Hit result = boundingBoxTree.Intersect(offsetRay);
+            if (result != null)
+                return result.distance;
             return null;
         }
 
         public override Hit Trace(Ray ray)
         {
-            float? dist = Intersect(ray, out Vector3 normal);
-
-            if (dist.HasValue)
-            {
-                Hit hit = new Hit();
-                hit.material = material;
-                hit.distance = dist.Value;
-                hit.truePosition = ray.GetEnd(dist.Value);
-                hit.position = ray.GetEnd(dist.Value - MathEx.RayOffset);
-                hit.normal = normal.Normalize();
-                return hit;
-            }
-            return null;
+            Ray offsetRay = new Ray(ray.position-position,ray.direction);
+            return boundingBoxTree.Intersect(offsetRay);
         }
     }
 }

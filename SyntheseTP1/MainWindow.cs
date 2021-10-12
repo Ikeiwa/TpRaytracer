@@ -113,9 +113,8 @@ namespace SyntheseTP1
 				radius = 0.15f
 			});*/
 
-			Scene.shapes.Add(new ObjObject("monkey.obj")
+			Scene.shapes.Add(new ObjObject("monkeyHD.obj", white)
             {
-                material = white,
 				position = new Vector3(0,0,0)
             });
 
@@ -326,6 +325,8 @@ namespace SyntheseTP1
 
 		private void DrawRayTrace()
         {
+			Stopwatch stopwatch = Stopwatch.StartNew();
+
             //Send pixels rays
             if (highRes)
             {
@@ -361,6 +362,9 @@ namespace SyntheseTP1
 					}
 				});
 			}
+
+			stopwatch.Stop();
+			Console.WriteLine(stopwatch.ElapsedMilliseconds+"ms");
 			
 
 			//Render buffer to screen
