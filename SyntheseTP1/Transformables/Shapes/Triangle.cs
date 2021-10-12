@@ -86,15 +86,34 @@ namespace SyntheseTP1.Shapes
             if (dist.HasValue)
             {
                 Vector3 pos = ray.GetEnd(dist.Value);
-                Vector3 barycenter = CalculateBarycenter(pos);
-                
+                Vector3 bary = CalculateBarycenter(pos);
 
-                Hit hit = new Hit();
-                hit.material = material;
-                hit.distance = dist.Value;
-                hit.truePosition = pos;
-                hit.position = ray.GetEnd(dist.Value - MathEx.RayOffset);
-                hit.normal = (B - A).Cross(C - A).Normalize();
+                Vector3 nbA = nA * bary.X;
+                Vector3 nbB = nB * bary.Y;
+                Vector3 nbC = nC * bary.Z;
+                Vector3 normal = new Vector3(
+                    nbA.X + nbB.X + nbC.X, 
+                    nbA.Y + nbB.Y + nbC.Y,
+                    nbA.Z + nbB.Z + nbC.Z
+                );
+
+                Vector2 ubA = uA * bary.X;
+                Vector2 ubB = uB * bary.Y;
+                Vector2 ubC = uC * bary.Z;
+                Vector2 uv = new Vector2(
+                    ubA.X + ubB.X + ubC.X,
+                    ubA.Y + ubB.Y + ubC.Y
+                );
+
+                Hit hit = new Hit
+                {
+                    material = material,
+                    distance = dist.Value,
+                    truePosition = pos,
+                    position = ray.GetEnd(dist.Value - MathEx.RayOffset),
+                    //hit.normal = (B - A).Cross(C - A).Normalize();
+                    normal = normal
+                };
                 return hit;
             }
             return null;
