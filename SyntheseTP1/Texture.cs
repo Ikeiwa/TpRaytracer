@@ -60,8 +60,6 @@ namespace SyntheseTP1
         {
             switch (wrap)
             {
-                case WrapMode.Clamp:
-                    break;
                 case WrapMode.Repeat:
                     x = x - (float)Math.Floor(x);
                     y = y - (float)Math.Floor(y);

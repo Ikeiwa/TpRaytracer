@@ -121,7 +121,7 @@ namespace SyntheseTP1
 								refractDir = ray.direction.Reflect(hit.normal);
 
 							HDRColor refractEnergy = SendRay(new Ray(hit.truePosition + refractDir * MathEx.RayOffset, refractDir), bounce + 1);
-							energy = refractEnergy * hit.material.color;
+							energy = refractEnergy * hit.material.GetColor(hit.uv);
 						}
                         else
                         {
