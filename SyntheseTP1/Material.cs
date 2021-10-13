@@ -13,12 +13,21 @@ namespace SyntheseTP1
         public double R = 0;
         public double G = 0;
         public double B = 0;
+        public double A = 0;
 
-        public HDRColor(double R,double G,double B)
+        public HDRColor(double R,double G,double B, double A = 1)
         {
             this.R = R;
             this.G = G;
             this.B = B;
+        }
+
+        public HDRColor(Color color)
+        {
+            R = (float) color.R / 255.0f;
+            G = (float) color.G / 255.0f;
+            B = (float) color.B / 255.0f;
+            A = (float) color.A / 255.0f;
         }
 
         public override string ToString()
@@ -53,6 +62,11 @@ namespace SyntheseTP1
         }
 
         public static HDRColor operator *(HDRColor color, float factor)
+        {
+            return new HDRColor(color.R * factor, color.G * factor, color.B * factor);
+        }
+
+        public static HDRColor operator *(float factor, HDRColor color)
         {
             return new HDRColor(color.R * factor, color.G * factor, color.B * factor);
         }
@@ -101,8 +115,18 @@ namespace SyntheseTP1
         public float roughness = 1;
         public MaterialType type = MaterialType.Diffuse;
         public float IOR = 1;
+        public bool useColorTexture = false;
+        public Texture colorTexture;
 
         public Material(){}
+
+        public HDRColor GetColor(Vector2 coordinates)
+        {
+            if (useColorTexture)
+                return colorTexture.Sample(coordinates) * color;
+
+            return color;
+        }
 
         public static Material white = new Material() {color = new HDRColor(1, 1, 1)};
     }

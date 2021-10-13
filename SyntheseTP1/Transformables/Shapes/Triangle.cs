@@ -112,7 +112,8 @@ namespace SyntheseTP1.Shapes
                     truePosition = pos,
                     position = ray.GetEnd(dist.Value - MathEx.RayOffset),
                     //hit.normal = (B - A).Cross(C - A).Normalize();
-                    normal = normal
+                    normal = normal,
+                    uv = uv
                 };
                 return hit;
             }

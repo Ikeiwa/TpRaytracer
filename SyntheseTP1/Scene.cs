@@ -85,16 +85,14 @@ namespace SyntheseTP1
 
 							if (lightEnergy > 0)
 							{
-								energy += hit.material.color * light.color * lightEnergy;
+								energy += hit.material.GetColor(hit.uv) * light.color * lightEnergy;
 							}
 						}
-
-
 
 						break;
 					case MaterialType.Mirror:
 						Vector3 reflectVec = ray.direction.Reflect(hit.normal);
-						energy = SendRay(new Ray(hit.truePosition + reflectVec * MathEx.RayOffset, reflectVec), bounce + 1) * hit.material.color;
+						energy = SendRay(new Ray(hit.truePosition + reflectVec * MathEx.RayOffset, reflectVec), bounce + 1) * hit.material.GetColor(hit.uv);
 						break;
 					case MaterialType.Glass:
 						float theta = Vector3.Dot(ray.direction, hit.normal);
@@ -129,7 +127,7 @@ namespace SyntheseTP1
                         {
 							Vector3 reflectDir = ray.direction.Reflect(hit.normal);
 							HDRColor reflectEnergy = SendRay(new Ray(hit.truePosition + reflectDir * MathEx.RayOffset, reflectDir), bounce + 1);
-							energy = reflectEnergy * hit.material.color;
+							energy = reflectEnergy * hit.material.GetColor(hit.uv);
 
 							//energy = reflectEnergy * hit.material.color * (1 / RTheta) * RTheta;
 							//RTheta s'annule

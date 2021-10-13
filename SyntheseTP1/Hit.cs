@@ -13,6 +13,7 @@ namespace SyntheseTP1
         public Vector3 position;
         public Vector3 truePosition;
         public Vector3 normal;
+        public Vector2 uv = Vector2.Zero;
         public float distance;
         public Material material;
     }

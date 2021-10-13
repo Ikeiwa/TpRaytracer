@@ -54,6 +54,7 @@
     <Compile Include="Hit.cs" />
     <Compile Include="MathEx.cs" />
     <Compile Include="Scene.cs" />
+    <Compile Include="Texture.cs" />
     <Compile Include="Transformables\Camera.cs" />
     <Compile Include="Component.cs" />
     <Compile Include="Components\RigidBody2D.cs" />
