@@ -91,7 +91,7 @@ namespace SyntheseTP1
 			Material red = new Material { color = new HDRColor(1, 0, 0) };
 			Material mirror = new Material { color = new HDRColor(1f, 1f, 1f), type = MaterialType.Mirror };
 			Material glass = new Material { color = new HDRColor(1f, 1f, 1f), type = MaterialType.Glass, IOR = 1.5f };
-            Material monkey = new Material { color = new HDRColor(1, 1, 1), useColorTexture = true, colorTexture = new Texture("monkey.png")};
+            Material monkey = new Material { color = new HDRColor(1, 1, 1), useColorTexture = true, colorTexture = new Texture("monkey.png"), type = MaterialType.Mirror};
 
 			/*Scene.shapes.Add(new Sphere
 			{

@@ -82,8 +82,8 @@ namespace SyntheseTP1
                     int px = (int) pixelPos.X;
                     int py = (int) pixelPos.Y;
 
-                    int px1 = Math.Min(px+1, (int) size.X);
-                    int py1 = Math.Min(py+1, (int) size.Y);
+                    int px1 = Math.Min(px+1, (int) size.X-1);
+                    int py1 = Math.Min(py+1, (int) size.Y-1);
 
                     HDRColor c00 = pixels[px, py];
                     HDRColor c10 = pixels[px1, py];
