@@ -58,6 +58,8 @@ namespace SyntheseTP1
 
         public HDRColor Sample(float x, float y)
         {
+            y = 1 - y;
+
             switch (wrap)
             {
                 case WrapMode.Repeat:

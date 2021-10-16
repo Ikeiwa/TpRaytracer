@@ -91,7 +91,7 @@ namespace SyntheseTP1
 			Material red = new Material { color = new HDRColor(1, 0, 0) };
 			Material mirror = new Material { color = new HDRColor(1f, 1f, 1f), type = MaterialType.Mirror };
 			Material glass = new Material { color = new HDRColor(1f, 1f, 1f), type = MaterialType.Glass, IOR = 1.5f };
-            Material monkey = new Material { color = new HDRColor(1, 1, 1), useColorTexture = true, colorTexture = new Texture("monkey.png"), type = MaterialType.Glass, IOR = 1.5f};
+            Material shrek = new Material { color = new HDRColor(1, 1, 1), useColorTexture = true, colorTexture = new Texture("shrek.png"), type = MaterialType.Diffuse, IOR = 1.5f};
 
 			/*Scene.shapes.Add(new Sphere
 			{
@@ -114,7 +114,7 @@ namespace SyntheseTP1
 				radius = 0.15f
 			});*/
 
-			Scene.shapes.Add(new ObjObject("monkeyHD.obj", monkey)
+			Scene.shapes.Add(new ObjObject("shrek.obj", shrek)
             {
 				position = new Vector3(0,0,0)
             });
